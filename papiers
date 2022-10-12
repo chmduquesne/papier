@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+import papier.cli
+
+if __name__ == "__main__":
+    papier.cli.main()

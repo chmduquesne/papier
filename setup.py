@@ -8,4 +8,7 @@ setup(name='papier',
     author_email='chmd+papier@chmd.fr',
     license='MIT',
     packages=['papier'],
+    entry_points = {
+        'console_scripts': ['papier=papier.cli:main'],
+    },
     zip_safe=False)
