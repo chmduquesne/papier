@@ -1,35 +1,49 @@
 from argparse import ArgumentParser
 
 
+# Parser
 cli = ArgumentParser(
-    description="A pdf library organizer",
-    epilog="Please report bugs to https://github.com/chmduquesne/papier/issues"
+    description='A pdf library organizer',
+    epilog='Bug reports: https://github.com/chmduquesne/papier/issues'
 )
 cli.add_argument("-d", "--dry-run", action="store_true",
     help="Run without making any modification")
 
 
-subparsers = cli.add_subparsers(dest="subcommand")
+
+# Add the subcommands
+subparsers = cli.add_subparsers(
+        dest="subcommand",
+        description="available subcommands"
+        help="action to take on your pdf library"
+        )
 
 
-def argument(*names_or_flags, **kwargs):
-    return names_or_flags, kwargs
-
-
-def subcommand(*subparser_args, parent=subparsers):
+# Inspired by https://mike.depalatis.net/blog/simplifying-argparse.html
+def subcommand(*added_arguments, parent=subparsers):
     def decorator(func):
-        if not func.__name__.startswith("subcommand_"):
-            raise NameError("subcommands function names need to start with 'subcommand_'")
-        name = func.__name__[len('subcommand_'):]
+        name = func.__name__
+
+        # remove leading _ in the name
+        if name.startswith("_"):
+            name = name[1:]
+
         parser = parent.add_parser(name, description=func.__doc__)
-        for args, kwargs in subparser_args:
+        for args, kwargs in added_arguments:
             parser.add_argument(*args, **kwargs)
         parser.set_defaults(func=func)
     return decorator
 
 
-@subcommand(argument('path', help="path to import"))
-def subcommand_import(args):
+# When passed to the decorator, adds argments to the subparser
+def add_argument(*names_or_flags, **kwargs):
+    return names_or_flags, kwargs
+
+
+
+
+@subcommand(add_argument('path', help="path to import"))
+def _import(args):
     """
     import the given path
     """
@@ -39,7 +53,7 @@ def subcommand_import(args):
 
 
 @subcommand()
-def subcommand_write(args):
+def write(args):
     """
     Write changes in the library to the files
     """
