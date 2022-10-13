@@ -60,6 +60,14 @@ def write(args):
     print(f"writing changes from your library to the files")
 
 
+@subcommand()
+def contribute(args):
+    """
+    Contribute data to improve papier
+    """
+    print(f"writing changes from your library to the files")
+
+
 def main():
     args = cli.parse_args()
     if args.subcommand is None:
