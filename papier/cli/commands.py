@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import confuse
 
 
 # Parser
@@ -11,24 +12,28 @@ cli.add_argument("-d", "--dry-run", action="store_true",
 
 
 
-# Add the subcommands
+# Add the commands
 subparsers = cli.add_subparsers(
-        dest="subcommand",
-        description="available subcommands"
-        help="action to take on your pdf library"
+        dest="command",
+        description="available commands",
+        help=""
         )
 
 
+# Existing commands
+existing_subcommands = set()
+
+
 # Inspired by https://mike.depalatis.net/blog/simplifying-argparse.html
-def subcommand(*added_arguments, parent=subparsers):
+def command(*added_arguments, subcommand_name=None):
     def decorator(func):
-        name = func.__name__
+        name = subcommand_name or func.__name__
 
-        # remove leading _ in the name
-        if name.startswith("_"):
-            name = name[1:]
+        if name in existing_subcommands:
+            raise NameError(f"{name} is already an existing command")
+        existing_subcommands.add(name)
 
-        parser = parent.add_parser(name, description=func.__doc__)
+        parser = subparsers.add_parser(name, description=func.__doc__)
         for args, kwargs in added_arguments:
             parser.add_argument(*args, **kwargs)
         parser.set_defaults(func=func)
@@ -42,7 +47,7 @@ def add_argument(*names_or_flags, **kwargs):
 
 
 
-@subcommand(add_argument('path', help="path to import"))
+@command(add_argument('path', help="path to import"), subcommand_name='import')
 def _import(args):
     """
     import the given path
@@ -52,15 +57,16 @@ def _import(args):
     print(f"importing {args.path} into your library")
 
 
-@subcommand()
+@command()
 def write(args):
     """
     Write changes in the library to the files
     """
+    print(args)
     print(f"writing changes from your library to the files")
 
 
-@subcommand()
+@command()
 def contribute(args):
     """
     Contribute data to improve papier
@@ -69,8 +75,9 @@ def contribute(args):
 
 
 def main():
+    config = confuse.Configuration('papier', 'papier')
     args = cli.parse_args()
-    if args.subcommand is None:
+    if args.command is None:
         cli.print_help()
     else:
         args.func(args)
