@@ -13,27 +13,39 @@ cli.add_argument("-p", "--pretend", action="store_true",
 
 
 # Add the commands
-subparsers = cli.add_subparsers(
-        dest="command",
-        description="available commands",
-        help=""
-        )
+subparsers = cli.add_subparsers(dest="command")
 
 
 # Existing commands
-existing_subcommands = set()
+_existing_commands = set()
 
 
 # Inspired by https://mike.depalatis.net/blog/simplifying-argparse.html
-def command(*added_arguments, subcommand_name=None):
+def command(*added_arguments, command_name=None):
+    """Decorator to turn a function in a command
+
+    Usage: @command(
+                add_argument('x', help='x help'),
+                add_argument('-b', help='foo help'),
+                ...
+                command_name='name'
+                )
+
+    The add_argument are passed to the subparser and should be interpreted as
+    https://docs.python.org/3/library/argparse.html#the-add-argument-method
+
+    If no command_name is given, it is inferred from the decorated
+    function name
+    """
     def decorator(func):
-        name = subcommand_name or func.__name__
+        name = command_name or func.__name__
 
-        if name in existing_subcommands:
+        if name in _existing_commands:
             raise NameError(f"{name} is already an existing command")
-        existing_subcommands.add(name)
+        _existing_commands.add(name)
 
-        parser = subparsers.add_parser(name, description=func.__doc__)
+        parser = subparsers.add_parser(name, description=func.__doc__,
+                help=func.__doc__)
         for args, kwargs in added_arguments:
             parser.add_argument(*args, **kwargs)
         parser.set_defaults(func=func)
@@ -47,8 +59,8 @@ def add_argument(*names_or_flags, **kwargs):
 
 
 
-@command(add_argument('path', help="path to import"), subcommand_name='import')
-def _import(args):
+@command(add_argument('path', help="path to import"), command_name='import')
+def func_import(args):
     """
     import the given path
     """
