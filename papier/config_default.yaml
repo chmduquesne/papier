@@ -1,0 +1,8 @@
+library: papier.sqlite
+directory: ~/papier
+
+import:
+  copy: yes
+  move: no
+
+plugins: []

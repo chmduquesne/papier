@@ -7,7 +7,7 @@ cli = ArgumentParser(
     description='A pdf library organizer',
     epilog='Bug reports: https://github.com/chmduquesne/papier/issues'
 )
-cli.add_argument("-d", "--dry-run", action="store_true",
+cli.add_argument("-p", "--pretend", action="store_true",
     help="Run without making any modification")
 
 
@@ -54,7 +54,9 @@ def _import(args):
     """
     if args.pretend:
         print("just pretending!")
-    print(f"importing {args.path} into your library")
+    from papier import importer
+    importer.run(args)
+
 
 
 @command()
