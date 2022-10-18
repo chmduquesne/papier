@@ -9,13 +9,15 @@ cli = argparse.ArgumentParser(
     description='A pdf library organizer',
     epilog='Bug reports: https://github.com/chmduquesne/papier/issues'
 )
-cli.add_argument("-p", "--pretend", action="store_true",
-    help="Run without making any modification")
+cli.add_argument('-p', '--pretend', action='store_true',
+    help='Run without making any modification')
+cli.add_argument('-i', '--ignore-env', action='store_true',
+    help='Ignore configuration through environement')
 
 
 
 # Add the commands
-subparsers = cli.add_subparsers(dest="command")
+subparsers = cli.add_subparsers(dest='command')
 
 
 # Existing commands
@@ -43,7 +45,7 @@ def command(*added_arguments, command_name=None):
         name = command_name or func.__name__
 
         if name in _existing_commands:
-            raise NameError(f"{name} is already an existing command")
+            raise NameError(f'{name} is already an existing command')
         _existing_commands.add(name)
 
         parser = subparsers.add_parser(name, description=func.__doc__,
@@ -61,19 +63,22 @@ def add_argument(*names_or_flags, **kwargs):
 
 
 
-@command(add_argument('path', help="path to import"), command_name='import')
+@command(add_argument('path', help='path to import'), command_name='import')
 def func_import(args):
     """
     import the given path
     """
-    papier.config["import"].set_args(args)
+    papier.config['import'].set_args(args)
     importer.run()
 
 
 
 def main():
+    load_plugins(papier.default_plugins)
     load_plugins(papier.config['plugins'].get())
     args = cli.parse_args()
+    if not args.ignore_env:
+        papier.config.set_env()
     if args.command is None:
         cli.print_help()
     else:
