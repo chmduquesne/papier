@@ -66,7 +66,8 @@ def func_import(args):
     """
     import the given path
     """
-    importer.run(args)
+    papier.config["import"].set_args(args)
+    importer.run()
 
 
 
