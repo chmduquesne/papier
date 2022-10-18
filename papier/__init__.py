@@ -10,3 +10,4 @@ default_plugins = ['basics']
 
 
 config = confuse.Configuration('papier', __name__)
+config.set_env()

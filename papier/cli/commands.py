@@ -1,6 +1,6 @@
 import papier
+import papier.plugins
 import argparse
-from papier.plugins import load_plugins
 from papier import importer
 
 
@@ -11,9 +11,6 @@ cli = argparse.ArgumentParser(
 )
 cli.add_argument('-p', '--pretend', action='store_true',
     help='Run without making any modification')
-cli.add_argument('-i', '--ignore-env', action='store_true',
-    help='Ignore configuration through environement')
-
 
 
 # Add the commands
@@ -74,11 +71,10 @@ def func_import(args):
 
 
 def main():
-    load_plugins(papier.default_plugins)
-    load_plugins(papier.config['plugins'].get())
+    papier.plugins.load_plugins(papier.default_plugins)
+    papier.plugins.load_plugins(papier.config['plugins'].as_str_seq())
+
     args = cli.parse_args()
-    if not args.ignore_env:
-        papier.config.set_env()
     if args.command is None:
         cli.print_help()
     else:
