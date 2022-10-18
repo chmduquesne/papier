@@ -78,4 +78,7 @@ def main():
     if args.command is None:
         cli.print_help()
     else:
+        # do we have to pass args?
+        # it would be better to merge args into the configuration of the
+        # plugin where func lives
         args.func(args)
