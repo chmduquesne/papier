@@ -64,8 +64,6 @@ def func_import(args):
     """
     import the given path
     """
-    if args.pretend:
-        print("just pretending!")
     from papier import importer
     importer.run(args)
 
@@ -89,7 +87,8 @@ def contribute(args):
 
 
 def main():
-    config = confuse.Configuration('papier', 'papier')
+    from papier.plugins import load_plugins
+    load_plugins()
     args = cli.parse_args()
     if args.command is None:
         cli.print_help()
