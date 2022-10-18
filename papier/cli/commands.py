@@ -1,9 +1,11 @@
-from argparse import ArgumentParser
-import confuse
+import papier
+import argparse
+from papier.plugins import load_plugins
+from papier import importer
 
 
 # Parser
-cli = ArgumentParser(
+cli = argparse.ArgumentParser(
     description='A pdf library organizer',
     epilog='Bug reports: https://github.com/chmduquesne/papier/issues'
 )
@@ -64,31 +66,12 @@ def func_import(args):
     """
     import the given path
     """
-    from papier import importer
     importer.run(args)
 
 
 
-@command()
-def write(args):
-    """
-    Write changes in the library to the files
-    """
-    print(args)
-    print(f"writing changes from your library to the files")
-
-
-@command()
-def contribute(args):
-    """
-    Contribute data to improve papier
-    """
-    print(f"writing changes from your library to the files")
-
-
 def main():
-    from papier.plugins import load_plugins
-    load_plugins()
+    load_plugins(papier.config['plugins'].get())
     args = cli.parse_args()
     if args.command is None:
         cli.print_help()

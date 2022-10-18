@@ -1,1 +1,1 @@
-from .commands import main
+from .commands import main, command, add_argument

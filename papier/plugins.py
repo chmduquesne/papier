@@ -40,7 +40,7 @@ class ModuleWrapper:
 
 
 
-def load_plugins(names=['example']):
+def load_plugins(names=()):
     for name in names:
         modname = f'papier.plugin.{name}'
         try:

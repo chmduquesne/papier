@@ -1,6 +1,6 @@
 """example papier plugin"""
 import papier.plugins
-from papier.cli.commands import command, add_argument
+from papier.cli import command, add_argument
 
 
 def on_plugins_loaded():
