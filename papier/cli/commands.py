@@ -61,11 +61,10 @@ def add_argument(*names_or_flags, **kwargs):
 
 
 @command(add_argument('path', help='path to import'), command_name='import')
-def func_import(args):
+def func_import():
     """
     import the given path
     """
-    papier.config['import'].set_args(args)
     importer.run()
 
 
@@ -81,4 +80,7 @@ def main():
         # do we have to pass args?
         # it would be better to merge args into the configuration of the
         # plugin where func lives
-        args.func(args)
+        plugin = args.func.__module__.split('.')[-1]
+        papier.config[plugin].set_args(args)
+        papier.config[plugin]["func"].set(None)
+        args.func()

@@ -5,12 +5,12 @@ from papier.cli.commands import command, add_argument
 
 
 @command()
-def showconf(args):
+def showconf():
     """show the loaded configuration"""
     print(papier.config.dump())
 
 
 @command()
-def version(args):
+def version():
     """show the installed version"""
     print(papier.__version__)
