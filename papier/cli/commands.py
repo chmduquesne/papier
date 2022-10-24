@@ -61,7 +61,7 @@ def add_argument(*names_or_flags, **kwds):
 def main():
     # Load the core plugins first, then the user plugins (to avoid command
     # collisions)
-    papier.plugins.load_plugins(papier.default_plugins)
+    papier.plugins.load_plugins(papier.core_plugins)
     papier.plugins.load_plugins(papier.config['plugins'].as_str_seq())
 
     args = cli.parse_args()
