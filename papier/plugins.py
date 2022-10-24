@@ -22,10 +22,11 @@ def register_listener(event, func):
 
 
 
-def send(event, *args, **kwargs):
+def send(event, *args, **kwds):
     """Call all functions registered for the event"""
+    log.info(f'Sending event: "{event}" (args={args}, kwds={kwds})')
     for func in _listeners[event]:
-        func(*args, **kwargs)
+        func(*args, **kwds)
 
 
 
@@ -49,4 +50,3 @@ def load_plugins(names=()):
             log.warning(f'** plugin {name} not found')
         except Exception:
             log.warning(f'** error loading plugin {name}:\n{traceback.format_exc()}')
-    send('plugins loaded')

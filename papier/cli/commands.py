@@ -1,7 +1,6 @@
 import papier
 import papier.plugins
 import argparse
-from papier import importer
 
 
 # Parser
@@ -47,29 +46,21 @@ def command(*added_arguments, command_name=None):
 
         parser = subparsers.add_parser(name, description=func.__doc__,
                 help=func.__doc__)
-        for args, kwargs in added_arguments:
-            parser.add_argument(*args, **kwargs)
+        for args, kwds in added_arguments:
+            parser.add_argument(*args, **kwds)
         parser.set_defaults(func=func)
     return decorator
 
 
 # When passed to the decorator, adds argments to the subparser
-def add_argument(*names_or_flags, **kwargs):
-    return names_or_flags, kwargs
+def add_argument(*names_or_flags, **kwds):
+    return names_or_flags, kwds
 
 
-
-
-@command(add_argument('path', help='path to import'), command_name='import')
-def func_import(args):
-    """
-    import the given path
-    """
-    importer.run(args)
-
-
-
+# Main entry point
 def main():
+    # Load the core plugins first, then the user plugins (to avoid command
+    # collisions)
     papier.plugins.load_plugins(papier.default_plugins)
     papier.plugins.load_plugins(papier.config['plugins'].as_str_seq())
 
@@ -77,4 +68,6 @@ def main():
     if args.command is None:
         cli.print_help()
     else:
+        papier.plugins.send("command starting", command=args.command)
         args.func(args)
+        papier.plugins.send("command finished", command=args.command)

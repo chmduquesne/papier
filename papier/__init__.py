@@ -6,7 +6,7 @@ __version__ = '0.0.1'
 __author__ = 'Christophe-Marie Duquesne <chmd+papier@chmd.fr>'
 
 
-default_plugins = ['basics']
+default_plugins = ['importer', 'basics']
 
 
 config = confuse.Configuration('papier', __name__)

@@ -1,8 +1,9 @@
 import os
-from papier import config
+from papier.cli.commands import command, add_argument
 
 
 
+@command(add_argument('path', help='path to import'), command_name='import')
 def run(args):
     process(args.path)
 
