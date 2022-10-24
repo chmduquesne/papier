@@ -7,7 +7,7 @@ __author__ = 'Christophe-Marie Duquesne <chmd+papier@chmd.fr>'
 
 
 # Plugins which should always be loaded first
-core_plugins = ['importer', 'basics']
+core_plugins = ['importer', 'info']
 
 
 config = confuse.Configuration('papier', __name__)
