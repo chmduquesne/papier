@@ -30,23 +30,15 @@ def send(event, *args, **kwds):
 
 
 
-class ModuleWrapper:
-    def __init__(self, module):
-        self.module = module
-
-
-    def myfunc(self):
-        if hasattr(self.module, 'myfunc'):
-            self.module.myfunc()
-
-
-
 def load_plugins(names=()):
     for name in names:
         modname = f'papier.plugin.{name}'
         try:
-            module = ModuleWrapper(importlib.import_module(modname))
+            log.info(f'** loading plugin "{name}"')
+            module = importlib.import_module(modname)
+            if hasattr(module, 'configure_me'):
+                module.configure_me()
         except ModuleNotFoundError as exc:
-            log.warning(f'** plugin {name} not found')
+            log.warning(f'** plugin "{name}" not found')
         except Exception:
-            log.warning(f'** error loading plugin {name}:\n{traceback.format_exc()}')
+            log.warning(f'** error loading plugin "{name}":\n{traceback.format_exc()}')
