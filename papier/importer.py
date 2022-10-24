@@ -2,8 +2,10 @@ import os
 from papier import config
 
 
-def run():
-    process(config["import"]["path"].as_filename())
+
+def run(args):
+    process(args.path)
+
 
 
 def process(path):

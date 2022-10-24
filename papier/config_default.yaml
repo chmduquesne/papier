@@ -5,4 +5,6 @@ import:
   copy: yes
   move: no
 
-plugins: []
+#plugins: []
+plugins:
+  - example
