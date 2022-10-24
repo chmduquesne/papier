@@ -24,21 +24,22 @@ def register_listener(event, func):
 
 def send(event, *args, **kwds):
     """Call all functions registered for the event"""
-    log.info(f'Sending event: "{event}" (args={args}, kwds={kwds})')
+    log.info(f'Sending event: {event}')
     for func in _listeners[event]:
+        log.info(f'Calling function: {func.__name__}(args={args}, kwds={kwds})')
         func(*args, **kwds)
 
 
 
-def load_plugins(names=()):
-    for name in names:
-        modname = f'papier.plugin.{name}'
+def load_plugins(plugins=()):
+    for plugin in plugins:
+        modname = f'papier.plugin.{plugin}'
         try:
-            log.info(f'** loading plugin "{name}"')
+            log.info(f'loading plugin {plugin}')
             module = importlib.import_module(modname)
             if hasattr(module, 'configure_me'):
                 module.configure_me()
         except ModuleNotFoundError as exc:
-            log.warning(f'** plugin "{name}" not found')
+            log.warning(f'** plugin {plugin} not found')
         except Exception:
-            log.warning(f'** error loading plugin "{name}":\n{traceback.format_exc()}')
+            log.warning(f'** error loading plugin "{plugin}":\n{traceback.format_exc()}')
