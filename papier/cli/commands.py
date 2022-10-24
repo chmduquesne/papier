@@ -1,6 +1,7 @@
 import papier
 import papier.plugins
 import argparse
+import logging
 
 
 # Parser
@@ -59,6 +60,12 @@ def add_argument(*names_or_flags, **kwds):
 
 # Main entry point
 def main():
+    # Set the log file
+    logging.basicConfig(
+            filename=papier.config['log'].as_str(),
+            encoding='utf-8', level=logging.DEBUG
+    )
+
     # Load the core plugins first, then the user plugins (to avoid command
     # collisions)
     papier.plugins.load_plugins(papier.core_plugins)
