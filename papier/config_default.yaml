@@ -12,3 +12,5 @@ import:
 
 #plugins: [example]
 plugins: []
+
+path: '{category}/{organization} - {date} - {subject}.pdf'
