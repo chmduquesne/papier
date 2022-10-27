@@ -13,4 +13,5 @@ import:
 #plugins: [example]
 plugins: []
 
-path: '{category}/{organization} - {date} - {subject}.pdf'
+path:
+  basename: '{{ [business, date, subject] | reject("==", "") | join(" - ") }}.pdf'
