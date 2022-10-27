@@ -6,6 +6,7 @@ import papier
 from tempfile import NamedTemporaryFile
 import logging
 import ocrmypdf
+import exiftool
 
 
 
@@ -28,8 +29,20 @@ def find_pdfs(path):
 
 
 def process(path):
-    path = ocr(path)
+    #path = ocr(path)
+    path = tag(path)
     print(path)
+
+
+
+def tag(path, tags={"Author": "Christophe-Marie Duquesne"}):
+    with NamedTemporaryFile(dir='.', delete=False) as tmp:
+        args = [f'-{key}="{value}"' for key, value in tags.items()] + ["-o", tmp.name, path]
+        print(" ".join(args))
+        with exiftool.ExifTool() as et:
+            et.execute(" ".join(args))
+        return tmp.name
+
 
 
 def ocr(path):
