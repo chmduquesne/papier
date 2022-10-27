@@ -34,7 +34,7 @@ def process(path):
             help=f'Move files to the library directory after import',
             default=argparse.SUPPRESS),
         add_argument('--write', action=argparse.BooleanOptionalAction,
-            help=f'Write tags to any file copied/moved to the library after import',
+            help=f'Write tags to the files copied/moved to the library after import',
             default=argparse.SUPPRESS),
         add_argument('--ocr', action=argparse.BooleanOptionalAction,
             help=f'Run OCR on files prior to import if no text is embedded',
