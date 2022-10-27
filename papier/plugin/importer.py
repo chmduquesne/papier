@@ -3,6 +3,13 @@ import re
 import argparse
 from papier.cli.commands import command, add_argument
 import papier
+from tempfile import NamedTemporaryFile
+import logging
+import ocrmypdf
+
+
+
+log = logging.getLogger(__name__)
 
 
 
@@ -21,7 +28,21 @@ def find_pdfs(path):
 
 
 def process(path):
+    path = ocr(path)
     print(path)
+
+
+def ocr(path):
+    if papier.config["import"]["ocr"].get():
+        try:
+            with NamedTemporaryFile() as tmp:
+                ocrmypdf.ocr(path, tmp.name,
+                        redo_ocr=papier.config["import"]["redo_ocr"].get())
+                return tmp.name
+        except ocrmypdf.exceptions.PriorOcrFoundError:
+            pass
+    return path
+
 
 
 
@@ -41,6 +62,9 @@ def process(path):
             default=argparse.SUPPRESS),
         add_argument('--redo-ocr', action=argparse.BooleanOptionalAction,
             help=f'Run OCR on files prior to import in any case',
+            default=argparse.SUPPRESS),
+        add_argument('--tag', action='append',
+            help=f'Set the given tag to the given value',
             default=argparse.SUPPRESS),
         add_argument('--autotag', action=argparse.BooleanOptionalAction,
             help=f'Automatically tag the files',
