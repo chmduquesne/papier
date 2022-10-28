@@ -6,7 +6,6 @@ import papier
 from tempfile import NamedTemporaryFile
 import logging
 import ocrmypdf
-import exiftool
 
 
 
