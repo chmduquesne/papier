@@ -29,6 +29,12 @@ def find_pdfs(path):
 
 
 def process(path):
+    for key in papier.config['set_tag'].as_str_seq():
+        print(key)
+    for key in papier.config['match']['threshold'].as_str_seq():
+        print(key)
+
+
     #path = ocr(path)
     path = tag(path)
     print(path)
@@ -64,6 +70,14 @@ def ocr(path):
 
 
 
+def split_tag(s):
+    i = s.find('=')
+    if i == -1:
+        raise argparse.ArgumentError(
+        'expected syntax for --set-tag argument: <key>=<value>')
+    return (s[:i], s[i+1:])
+
+
 
 @command(
         add_argument('path', help='path to import'),
@@ -82,7 +96,7 @@ def ocr(path):
         add_argument('--redo-ocr', action=argparse.BooleanOptionalAction,
             help=f'Run OCR on files prior to import in any case',
             default=argparse.SUPPRESS),
-        add_argument('--tag', action='append',
+        add_argument('--set-tag', action='append',
             help=f'Set the given tag to the given value',
             default=argparse.SUPPRESS),
         add_argument('--autotag', action=argparse.BooleanOptionalAction,
@@ -90,6 +104,14 @@ def ocr(path):
             default=argparse.SUPPRESS),
         command_name='import')
 def run(args):
+    if hasattr(args, 'set_tag'):
+        for s in args.set_tag:
+            k, v = split_tag(s)
+            print(f'setting {k}={v}')
+            papier.config['set_tag'][k].set(v)
+        del args.__dict__['set_tag']
+
     papier.config['import'].set_args(args)
+    papier.config['match']['threshold']['yada'].set(.1)
     for p in find_pdfs(args.path):
         process(p)
