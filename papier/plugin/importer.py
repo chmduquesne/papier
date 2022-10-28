@@ -29,11 +29,8 @@ def find_pdfs(path):
 
 
 def process(path):
-    for key in papier.config['set_tag'].as_str_seq():
-        print(key)
-    for key in papier.config['match']['threshold'].as_str_seq():
-        print(key)
-
+    meta = dict([(k, v.get()) for k, v in papier.config['set_tag'].items()])
+    print(meta)
 
     #path = ocr(path)
     path = tag(path)
@@ -107,7 +104,6 @@ def run(args):
     if hasattr(args, 'set_tag'):
         for s in args.set_tag:
             k, v = split_tag(s)
-            print(f'setting {k}={v}')
             papier.config['set_tag'][k].set(v)
         del args.__dict__['set_tag']
 
