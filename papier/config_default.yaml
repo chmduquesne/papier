@@ -10,6 +10,12 @@ import:
   redo_ocr: no
   autotag: yes
 
+tags:
+  threshold:
+    author: .95
+    date: .95
+    title: .75
+
 #plugins: [example]
 plugins: []
 
