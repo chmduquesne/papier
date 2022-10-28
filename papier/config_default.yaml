@@ -10,7 +10,7 @@ import:
   redo_ocr: no
   autotag: yes
 
-tags:
+match:
   threshold:
     author: .95
     date: .95
