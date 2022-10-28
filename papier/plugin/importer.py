@@ -6,6 +6,7 @@ import papier
 from tempfile import NamedTemporaryFile
 import logging
 import ocrmypdf
+from PyPDF2 import PdfReader, PdfWriter
 
 
 
@@ -34,13 +35,20 @@ def process(path):
 
 
 
-def tag(path, tags={"Author": "Christophe-Marie Duquesne"}):
+def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
     with NamedTemporaryFile(dir='.', delete=False) as tmp:
-        args = [f'-{key}="{value}"' for key, value in tags.items()] + ["-o", tmp.name, path]
-        print(" ".join(args))
-        with exiftool.ExifTool() as et:
-            et.execute(" ".join(args))
+        reader = PdfReader(path)
+        writer = PdfWriter()
+
+        writer.appendPagesFromReader(reader)
+        metadata = reader.getDocumentInfo()
+        writer.addMetadata(metadata)
+
+        # Add the metadata
+        writer.add_metadata(tags)
+        writer.write(tmp)
         return tmp.name
+
 
 
 
