@@ -38,11 +38,10 @@ def process(path):
 def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
     with NamedTemporaryFile(dir='.', delete=False) as tmp:
         reader = PdfReader(path)
-        writer = PdfWriter()
 
+        writer = PdfWriter()
         writer.appendPagesFromReader(reader)
-        metadata = reader.getDocumentInfo()
-        writer.addMetadata(metadata)
+        writer.addMetadata(reader.getDocumentInfo())
 
         # Add the metadata
         writer.add_metadata(tags)
