@@ -31,6 +31,20 @@ def send(event, *args, **kwds):
 
 
 
+_predictors = defaultdict(list)
+
+
+
+def register_predictor(tag, func, dependencies=[]):
+    _predictors[tag].append((func, dependencies))
+
+
+
+def predict_metadata(doc, meta):
+    pass
+
+
+
 def load_plugins(plugins=()):
     for plugin in plugins:
         modname = f'papier.plugin.{plugin}'
