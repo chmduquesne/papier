@@ -29,7 +29,7 @@ def find_pdfs(path):
 
 
 def process(path):
-    meta = dict([(k, v.get()) for k, v in papier.config['set_tag'].items()])
+    meta = {k: v.get() for k, v in papier.config['set_tag'].items()}
     print(meta)
 
     #path = ocr(path)
@@ -67,12 +67,13 @@ def ocr(path):
 
 
 
-def split_tag(s):
-    i = s.find('=')
+def split_equals(tag_pair):
+    """splits the input string at the first equals sign"""
+    i = tag_pair.find('=')
     if i == -1:
         raise argparse.ArgumentError(
         'expected syntax for --set-tag argument: <key>=<value>')
-    return (s[:i], s[i+1:])
+    return (tag_pair[:i], tag_pair[i+1:])
 
 
 
@@ -102,12 +103,11 @@ def split_tag(s):
         command_name='import')
 def run(args):
     if hasattr(args, 'set_tag'):
-        for s in args.set_tag:
-            k, v = split_tag(s)
-            papier.config['set_tag'][k].set(v)
+        for tag_pair in args.set_tag:
+            tag_key, tag_value = split_equals(tag_pair)
+            papier.config['set_tag'][tag_key].set(tag_value)
         del args.__dict__['set_tag']
 
     papier.config['import'].set_args(args)
-    papier.config['match']['threshold']['yada'].set(.1)
     for p in find_pdfs(args.path):
         process(p)
