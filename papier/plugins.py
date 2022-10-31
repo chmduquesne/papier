@@ -40,11 +40,19 @@ def register_predictor(func, provides=None, requires=None):
     _provides[func] = provides
     _requires[func] = requires
 
-    # order the predictor in such a way that the number of unsatisfied
-    # dependencies is minimized
-    _predictors = min([_predictors[:i] + [func] + _predictors[i:]
-                       for i in range(len(_predictors) + 1)],
-                      key=unsatisfied)
+
+
+def sort_resolve(predictors):
+    """sort the predictors in a way that the total of unmet dependencies
+    is minimized"""
+    res = []
+    # At each step, try to insert p everywhere and select the list that
+    # minimizes the number of unsatisfied dependencies
+    for p in predictors:
+        res = min([res[:i] + [p] + res[i:] for i in range(len(res) + 1)],
+                  key=unsatisfied)
+    return res
+
 
 
 def unsatisfied(predictors):
