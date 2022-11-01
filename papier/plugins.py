@@ -42,7 +42,7 @@ def register_predictor(func, provides=None, requires=None):
 
 
 
-def sort_resolve(predictors):
+def resolved(predictors):
     """sort the predictors in a way that the total of unmet dependencies
     is minimized"""
     res = []
