@@ -31,56 +31,6 @@ def send(event, *args, **kwds):
 
 
 
-_provides = defaultdict(list)
-_requires = defaultdict(list)
-_predictors = []
-
-
-def register_predictor(func, provides=None, requires=None):
-    _provides[func] = provides
-    _requires[func] = requires
-
-
-
-def resolved(predictors):
-    """sort the predictors in a way that the total of unmet dependencies
-    is minimized"""
-    res = []
-    # At each step, try to insert p everywhere and select the list that
-    # minimizes the number of unsatisfied dependencies
-    for p in predictors:
-        res = min([res[:i] + [p] + res[i:] for i in range(len(res) + 1)],
-                  key=unsatisfied)
-    return res
-
-
-
-def unsatisfied(predictors):
-    """number of unsatisfied dependencies at each step if a list of
-    predictors is processed as is"""
-    # An empty list has no unsatisfied dependency
-    if len(predictors) == 0:
-        return 0
-
-    head = predictors[:-1]
-    tail = predictors[-1]
-
-    # compute the tags provided by the head
-    provided = set()
-    for p in head:
-        for tag in _provides[p]:
-            provided.add(tag)
-
-    # add the unsatisfied dependencies from the head and the tail
-    res = unsatisfied(head)
-    for d in _dependencies[tail]:
-        if d not in provided:
-            res += 1
-
-    return res
-
-
-
 
 def predict_metadata(document, set_tags=None):
     # returns a meta
