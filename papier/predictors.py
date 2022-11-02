@@ -7,7 +7,7 @@ results.
 Predictors can specify tags that they would like to consume, along with
 tags they provide.
 """
-from collections import defaultdict, namedtuple
+from collections import namedtuple
 
 
 
