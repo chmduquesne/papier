@@ -29,7 +29,7 @@ def find_pdfs(path):
 
 
 def process(path):
-    meta = {k: v.get() for k, v in papier.config['set_tag'].items()}
+    meta = {k: v.get() for k, v in papier.config['import']['set_tag'].items()}
     print(meta)
 
     #path = ocr(path)
@@ -67,12 +67,11 @@ def ocr(path):
 
 
 
-def split_equals(tag_pair):
-    """splits the input string at the first equals sign"""
+def split_pair(tag_pair):
+    """splits the tag pair at the first equals sign"""
     i = tag_pair.find('=')
     if i == -1:
-        raise argparse.ArgumentError(
-        'expected syntax for --set-tag argument: <key>=<value>')
+        raise argparse.ArgumentError('Wrong argument for --set-tag: expected <key>=<value>')
     return (tag_pair[:i], tag_pair[i+1:])
 
 
@@ -82,11 +81,11 @@ def split_equals(tag_pair):
         add_argument('--copy', action=argparse.BooleanOptionalAction,
             help=f'Copy files to the library directory after import',
             default=argparse.SUPPRESS),
-        add_argument('--move', action=argparse.BooleanOptionalAction,
-            help=f'Move files to the library directory after import',
+        add_argument('--delete', action=argparse.BooleanOptionalAction,
+            help=f'Delete original files after copy',
             default=argparse.SUPPRESS),
-        add_argument('--write', action=argparse.BooleanOptionalAction,
-            help=f'Write tags to the files copied/moved to the library after import',
+        add_argument('--modify', action=argparse.BooleanOptionalAction,
+            help=f'Rewrite the files copied to the library after import to include tags/ocr',
             default=argparse.SUPPRESS),
         add_argument('--ocr', action=argparse.BooleanOptionalAction,
             help=f'Run OCR on files prior to import if no text is embedded',
@@ -104,8 +103,8 @@ def split_equals(tag_pair):
 def run(args):
     if hasattr(args, 'set_tag'):
         for tag_pair in args.set_tag:
-            tag_key, tag_value = split_equals(tag_pair)
-            papier.config['set_tag'][tag_key].set(tag_value)
+            tag_key, tag_value = split_pair(tag_pair)
+            papier.config['import']['set_tag'][tag_key].set(tag_value)
         del args.__dict__['set_tag']
 
     papier.config['import'].set_args(args)

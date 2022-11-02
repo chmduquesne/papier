@@ -4,14 +4,13 @@ log: papier.log
 
 import:
   copy: yes
-  move: no
-  write: no
-  ocr: no
+  delete: no
+  modify: no
+  ocr: yes
   redo_ocr: no
   autotag: yes
-
-set_tag:
-  tagged_by: papier
+  set_tag:
+    tagged_by: papier
 
 match:
   threshold:
