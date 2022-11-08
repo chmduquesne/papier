@@ -3,10 +3,12 @@ import re
 import argparse
 from papier.cli.commands import command, add_argument
 import papier
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile as TempFile
 import logging
 import ocrmypdf
 from PyPDF2 import PdfReader, PdfWriter
+import shutil
+import confuse
 
 
 
@@ -15,6 +17,15 @@ log = logging.getLogger(__name__)
 
 
 PDF = re.compile(r'.*\.pdf', re.IGNORECASE)
+CONFIG_TEMPLATE = {
+        'copy': bool,
+        'delete': bool,
+        'modify': bool,
+        'ocr': bool,
+        'redo_ocr': bool,
+        'autotag': bool,
+        'set_tag': dict
+        }
 
 
 
@@ -28,18 +39,36 @@ def find_pdfs(path):
 
 
 
-def process(path):
-    meta = {k: v.get() for k, v in papier.config['import']['set_tag'].items()}
-    print(meta)
 
-    #path = ocr(path)
-    path = tag(path)
-    print(path)
+def process(path):
+    cfg = papier.config['import'].get(CONFIG_TEMPLATE)
+    src = path
+    with TempFile() as tmp:
+        dst = tmp.name
+
+        # copy the file to dst, run ocr if necessary
+        shutil.copy(src, dst)
+        if cfg.ocr:
+            ocr(src, dst, redo_ocr=cfg.redo_ocr)
+        metadata = {}
+        set_tags = {k: v for k, v in cfg.set_tag.items()}
+        if cfg.autotag:
+            # autotag should be interactive and return a status
+            metadata |= autotag(dst, set_tags=set_tags)
+        if cfg.modify:
+            pass
+        if cfg.copy:
+            pass
+
+
+
+def autotag(path, set_tags=None):
+    return {}
 
 
 
 def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
-    with NamedTemporaryFile(dir='.', delete=False) as tmp:
+    with TempFile(dir='.', delete=False) as tmp:
         reader = PdfReader(path)
 
         writer = PdfWriter()
@@ -54,16 +83,11 @@ def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
 
 
 
-def ocr(path):
-    if papier.config["import"]["ocr"].get():
-        try:
-            with NamedTemporaryFile() as tmp:
-                ocrmypdf.ocr(path, tmp.name,
-                        redo_ocr=papier.config["import"]["redo_ocr"].get())
-                return tmp.name
-        except ocrmypdf.exceptions.PriorOcrFoundError:
-            pass
-    return path
+def ocr(src, dst, redo_ocr=False):
+    try:
+        ocrmypdf.ocr(src, dst, redo_ocr=redo_ocr, progress_bar=False)
+    except ocrmypdf.exceptions.PriorOcrFoundError:
+        pass
 
 
 
