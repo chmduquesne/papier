@@ -1,5 +1,5 @@
+"""Basic papier info. Imported before the command line gets parsed"""
 import confuse
-from sys import stderr
 
 
 __version__ = '0.0.1'
