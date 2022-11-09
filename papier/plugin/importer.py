@@ -1,3 +1,5 @@
+"""importing into papier"""
+
 import os
 import re
 import argparse
@@ -12,24 +14,18 @@ import confuse
 
 
 
+# Logger for this plugin
 log = logging.getLogger(__name__)
 
 
 
+# Which files we process
 PDF = re.compile(r'.*\.pdf', re.IGNORECASE)
-CONFIG_TEMPLATE = {
-        'copy': bool,
-        'delete': bool,
-        'modify': bool,
-        'ocr': bool,
-        'redo_ocr': bool,
-        'autotag': bool,
-        'set_tag': dict
-        }
 
 
 
 def find_pdfs(path):
+    """returns all the pdfs under a given path"""
     if os.path.isfile(path):
         if PDF.match(path):
             yield path
@@ -40,8 +36,25 @@ def find_pdfs(path):
 
 
 
+def get_conf():
+    """returns the import config"""
+    params = {
+        'copy': bool,
+        'delete': bool,
+        'modify': bool,
+        'ocr': bool,
+        'redo_ocr': bool,
+        'autotag': bool,
+        'set_tag': dict
+        }
+    return papier.config['import'].get(params)
+
+
+
+
 def process(path):
-    cfg = papier.config['import'].get(CONFIG_TEMPLATE)
+    log.info(f'processing {path}')
+    cfg = get_conf()
     src = path
     with TempFile() as tmp:
         dst = tmp.name
@@ -84,6 +97,7 @@ def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
 
 
 def ocr(src, dst, redo_ocr=False):
+    """runs ocr on the imput file"""
     try:
         ocrmypdf.ocr(src, dst, redo_ocr=redo_ocr, progress_bar=False)
     except ocrmypdf.exceptions.PriorOcrFoundError:
@@ -92,7 +106,7 @@ def ocr(src, dst, redo_ocr=False):
 
 
 def split_pair(tag_pair):
-    """splits the tag pair at the first equals sign"""
+    """splits the input string at the first equals sign"""
     i = tag_pair.find('=')
     if i == -1:
         raise argparse.ArgumentError('Wrong argument for --set-tag: expected <key>=<value>')
