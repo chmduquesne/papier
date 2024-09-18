@@ -1,4 +1,5 @@
 confuse==2.0.1
 ocrmypdf==16.5.0
 pypdf==4.3.1
+argcomplete==3.5.0
 pytest==8.3.3

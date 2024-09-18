@@ -1,6 +1,7 @@
 import papier
 import papier.plugins
 import argparse
+import argcomplete
 import logging
 
 
@@ -80,6 +81,9 @@ def main():
     # Core plugins first, user-specified second to avoid collisions
     papier.plugins.load_plugins(papier.core_plugins)
     papier.plugins.load_plugins(papier.config['plugins'].as_str_seq())
+
+    # Enable command line completion
+    argcomplete.autocomplete(cli)
 
     # Parse the command line
     args = cli.parse_args()
