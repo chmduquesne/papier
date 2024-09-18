@@ -8,7 +8,7 @@ import papier
 from tempfile import NamedTemporaryFile as TempFile
 import logging
 import ocrmypdf
-from PyPDF2 import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 import shutil
 import confuse
 
