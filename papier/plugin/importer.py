@@ -11,7 +11,7 @@ import ocrmypdf
 from pypdf import PdfReader, PdfWriter
 import shutil
 from argcomplete.completers import FilesCompleter
-from typing import Generator, Dict, List
+from typing import Generator, Dict, List, Any
 
 
 # Logger for this plugin
@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 PDF = re.compile(r'.*\.pdf', re.IGNORECASE)
 
 
-def find_pdfs(path: str) -> Generator[str]:
+def find_pdfs(path: str) -> Generator[str, str, str]:
     """returns all the pdfs under a given path"""
     if os.path.isfile(path):
         if PDF.match(path):
@@ -130,7 +130,7 @@ def split_pair(tag_pair: str) -> tuple[str, ...]:
                      help='Automatically tag the files',
                      default=argparse.SUPPRESS),
         command_name='import')
-def run(args: List[...]) -> None:
+def run(args: List[Any]) -> None:
     if hasattr(args, 'set_tag'):
         for tag_pair in args.set_tag:
             tag_key, tag_value = split_pair(tag_pair)
