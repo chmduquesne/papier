@@ -10,19 +10,15 @@ import logging
 import ocrmypdf
 from pypdf import PdfReader, PdfWriter
 import shutil
-import confuse
 from argcomplete.completers import FilesCompleter
-
 
 
 # Logger for this plugin
 log = logging.getLogger(__name__)
 
 
-
 # Which files we process
 PDF = re.compile(r'.*\.pdf', re.IGNORECASE)
-
 
 
 def find_pdfs(path):
@@ -32,9 +28,7 @@ def find_pdfs(path):
             yield path
     elif os.path.isdir(path):
         for p in os.listdir(path):
-            yield from find_pdfs(os.path.join(path,p))
-
-
+            yield from find_pdfs(os.path.join(path, p))
 
 
 def get_conf():
@@ -49,8 +43,6 @@ def get_conf():
         'set_tag': dict
         }
     return papier.config['import'].get(params)
-
-
 
 
 def process(path):
@@ -75,10 +67,8 @@ def process(path):
             pass
 
 
-
 def autotag(path, set_tags=None):
     return {}
-
 
 
 def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
@@ -95,8 +85,6 @@ def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
         return tmp.name
 
 
-
-
 def ocr(src, dst, redo_ocr=False):
     """runs ocr on the imput file"""
     try:
@@ -105,40 +93,39 @@ def ocr(src, dst, redo_ocr=False):
         pass
 
 
-
 def split_pair(tag_pair):
     """splits the input string at the first equals sign"""
     i = tag_pair.find('=')
     if i == -1:
-        raise argparse.ArgumentError('Wrong argument for --set-tag: expected <key>=<value>')
+        raise argparse.ArgumentError(
+                'Wrong argument for --set-tag: expected <key>=<value>')
     return (tag_pair[:i], tag_pair[i+1:])
-
 
 
 @command(
         add_argument('path', help='path to import',
                      completer=FilesCompleter(allowednames=('.pdf'))),
         add_argument('--copy', action=argparse.BooleanOptionalAction,
-            help=f'Copy files to the library directory after import',
-            default=argparse.SUPPRESS),
+                     help='Copy files to the library directory after import',
+                     default=argparse.SUPPRESS),
         add_argument('--delete', action=argparse.BooleanOptionalAction,
-            help=f'Delete original files after copy',
-            default=argparse.SUPPRESS),
+                     help='Delete original files after copy',
+                     default=argparse.SUPPRESS),
         add_argument('--modify', action=argparse.BooleanOptionalAction,
-            help=f'Rewrite the files copied to the library after import to include tags/ocr',
-            default=argparse.SUPPRESS),
+                     help='Rewrite the files copied to the library',
+                     default=argparse.SUPPRESS),
         add_argument('--ocr', action=argparse.BooleanOptionalAction,
-            help=f'Run OCR on files prior to import if no text is embedded',
-            default=argparse.SUPPRESS),
+                     help='Run OCR prior to import if no text is embedded',
+                     default=argparse.SUPPRESS),
         add_argument('--redo-ocr', action=argparse.BooleanOptionalAction,
-            help=f'Run OCR on files prior to import in any case',
-            default=argparse.SUPPRESS),
+                     help='Run OCR on files prior to import in any case',
+                     default=argparse.SUPPRESS),
         add_argument('--set-tag', action='append',
-            help=f'Set the given tag to the given value',
-            default=argparse.SUPPRESS),
+                     help='Set the given tag to the given value',
+                     default=argparse.SUPPRESS),
         add_argument('--autotag', action=argparse.BooleanOptionalAction,
-            help=f'Automatically tag the files',
-            default=argparse.SUPPRESS),
+                     help='Automatically tag the files',
+                     default=argparse.SUPPRESS),
         command_name='import')
 def run(args):
     if hasattr(args, 'set_tag'):
