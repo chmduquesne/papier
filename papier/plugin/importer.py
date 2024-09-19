@@ -11,6 +11,7 @@ import ocrmypdf
 from pypdf import PdfReader, PdfWriter
 import shutil
 import confuse
+from argcomplete.completers import FilesCompleter
 
 
 
@@ -115,7 +116,8 @@ def split_pair(tag_pair):
 
 
 @command(
-        add_argument('path', help='path to import'),
+        add_argument('path', help='path to import',
+                     completer=FilesCompleter(allowednames=('.pdf'))),
         add_argument('--copy', action=argparse.BooleanOptionalAction,
             help=f'Copy files to the library directory after import',
             default=argparse.SUPPRESS),

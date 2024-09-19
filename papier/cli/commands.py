@@ -57,7 +57,26 @@ def command(*added_arguments, command_name=None):
         parser = subparsers.add_parser(name, description=func.__doc__,
                 help=func.__doc__)
         for args, kwds in added_arguments:
-            parser.add_argument(*args, **kwds)
+            # Hack to pass a argcomplete.completer:
+            #
+            # argcomplete expects a completer to be passed by attributing
+            # the result of parser.add_argument(). See
+            # https://kislyuk.github.io/argcomplete/#specifying-completers
+            #
+            # Because we use a decorator here, we cannot do that
+            # with our auxiliary add_argument function. Instead, the user
+            # of this function is expected to pass the completer as a
+            # keyword argument named 'completer'.
+            #
+            # The code below removes this completer keyword that
+            # parser.add_argument does not expect, and assigns it the way
+            # argcomplete expects it.
+            keyword_args = kwds
+            completer = None
+            if 'completer' in keyword_args:
+                completer = keyword_args['completer']
+                del keyword_args['completer']
+            parser.add_argument(*args, **keyword_args).completer = completer
         parser.set_defaults(func=func)
     return decorator
 
@@ -65,6 +84,10 @@ def command(*added_arguments, command_name=None):
 
 # When passed to the decorator, adds argments to the subparser
 def add_argument(*names_or_flags, **kwds):
+    """Adds argument to the subparser. If the keyword 'completer' is
+    passed, a completer compatible with argcomplete.completers is
+    expected
+    """
     return names_or_flags, kwds
 
 
