@@ -1,7 +1,7 @@
 """plugin to show basic info"""
 import papier
 from papier.cli.commands import command
-from typing import List
+from typing import List, Any
 
 
 @command()
