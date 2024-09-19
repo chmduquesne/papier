@@ -3,7 +3,8 @@ import dateparser
 from dateparser_data.settings import default_parsers
 
 
-def predict_date(doc, lang=None, ref=None):
+def predict_date(doc: str, lang: str = None,
+                 ref: datetime.datetime = None) -> str:
     import warnings
     warnings.filterwarnings("ignore", module="dateparser")
 
