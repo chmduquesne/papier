@@ -8,6 +8,7 @@ Predictors can specify tags that they would like to consume, along with
 tags they provide.
 """
 from collections import namedtuple
+from typing import List, Callable
 
 
 Predictor = namedtuple('Predictor', ['func', 'consumes', 'produces'])
@@ -16,12 +17,14 @@ Predictor = namedtuple('Predictor', ['func', 'consumes', 'produces'])
 _predictors = []
 
 
-def register_predictor(func, produces=None, consumes=None):
+def register_predictor(func: Callable,
+                       produces: List[str] = None,
+                       consumes: List[str] = None) -> None:
     """Register a predictor, its preferred dependencies"""
     _predictors.append(Predictor(func, produces, consumes))
 
 
-def unsatisfied(predictors):
+def unsatisfied(predictors: List[Predictor]) -> int:
     """total unsatisfied dependencies if the list is processed in order"""
     available = set()
     res = 0
@@ -34,7 +37,7 @@ def unsatisfied(predictors):
     return res
 
 
-def resolve(predictors):
+def resolve(predictors: List[Predictor]) -> List[Predictor]:
     """sort the predictors to minimize the total unmet dependencies"""
     res = []
     for p in predictors:
