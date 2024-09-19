@@ -1,7 +1,6 @@
 """plugin to show basic info"""
 import papier
-import confuse
-from papier.cli.commands import command, add_argument
+from papier.cli.commands import command
 
 
 @command()
