@@ -14,8 +14,8 @@ cli = argparse.ArgumentParser(
 
 # Global flags
 cli.add_argument('--dry-run', action='store_true',
-    help='Run without making any modification',
-    default=argparse.SUPPRESS)
+                 help='Run without making any modification',
+                 default=argparse.SUPPRESS)
 global_flags = ['dry_run']
 
 
@@ -23,10 +23,8 @@ global_flags = ['dry_run']
 subparsers = cli.add_subparsers(dest='command')
 
 
-
 # Existing commands
 _existing_commands = set()
-
 
 
 # Inspired by https://mike.depalatis.net/blog/simplifying-argparse.html
@@ -54,8 +52,9 @@ def command(*added_arguments, command_name=None):
             raise NameError(f'{name} is already an existing command')
         _existing_commands.add(name)
 
-        parser = subparsers.add_parser(name, description=func.__doc__,
-                help=func.__doc__)
+        parser = subparsers.add_parser(name,
+                                       description=func.__doc__,
+                                       help=func.__doc__)
         for args, kwds in added_arguments:
             # Hack to pass a argcomplete.completer:
             #
@@ -81,7 +80,6 @@ def command(*added_arguments, command_name=None):
     return decorator
 
 
-
 # When passed to the decorator, adds argments to the subparser
 def add_argument(*names_or_flags, **kwds):
     """Adds argument to the subparser. If the keyword 'completer' is
@@ -89,7 +87,6 @@ def add_argument(*names_or_flags, **kwds):
     expected
     """
     return names_or_flags, kwds
-
 
 
 # Main entry point
