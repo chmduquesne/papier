@@ -3,6 +3,7 @@ import papier.plugins
 import argparse
 import argcomplete
 import logging
+from typing import Any, Callable, Tuple, List, Dict
 
 
 # Parser
@@ -28,7 +29,7 @@ _existing_commands = set()
 
 
 # Inspired by https://mike.depalatis.net/blog/simplifying-argparse.html
-def command(*added_arguments, command_name=None):
+def command(*added_arguments: Any, command_name: str = None) -> Callable:
     """Decorator to turn a function in a command
 
     Usage: @command(
@@ -44,7 +45,7 @@ def command(*added_arguments, command_name=None):
     If no command_name is given, it is inferred from the decorated
     function name
     """
-    def decorator(func):
+    def decorator(func: Callable) -> None:
         name = command_name or func.__name__
 
         # Check if the command exists already
@@ -81,7 +82,8 @@ def command(*added_arguments, command_name=None):
 
 
 # When passed to the decorator, adds argments to the subparser
-def add_argument(*names_or_flags, **kwds):
+def add_argument(*names_or_flags: Any, **kwds: Any
+                 ) -> Tuple[List[Any], Dict[str, Any]]:
     """Adds argument to the subparser. If the keyword 'completer' is
     passed, a completer compatible with argcomplete.completers is
     expected
@@ -90,7 +92,7 @@ def add_argument(*names_or_flags, **kwds):
 
 
 # Main entry point
-def main():
+def main() -> None:
     # Start logging before we even parse the command line
     logging.basicConfig(
             filename=papier.config['log'].as_str(),
