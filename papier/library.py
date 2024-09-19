@@ -2,7 +2,7 @@ import papier
 import sqlite3
 
 
-def init():
+def init() -> sqlite3.Connection:
     con = sqlite3.connect(papier.config["library"].get())
     with con as cursor:
         cursor.execute("CREATE TABLE IF NOT EXISTS files("
@@ -15,5 +15,5 @@ def init():
     return con
 
 
-def add(path_orig, path, content, tags):
+def add(path_orig: str, path: str, content: str, tags: str) -> None:
     pass
