@@ -4,6 +4,7 @@ import logging
 import traceback
 import importlib
 from collections import defaultdict
+from typing import Callable, Tuple, Dict, List
 
 
 # Global logger
@@ -14,12 +15,12 @@ log = logging.getLogger('papier')
 _listeners = defaultdict(list)
 
 
-def register_listener(event, func):
+def register_listener(event: str, func: Callable) -> None:
     """Sets func to be called whenever the event is triggered"""
     _listeners[event].append(func)
 
 
-def send(event, *args, **kwds):
+def send(event: str, *args: Tuple[...], **kwds: Dict[str, ...]) -> None:
     """Call all functions registered for the event"""
     log.info(f'Sending event: {event}')
     for func in _listeners[event]:
@@ -28,13 +29,13 @@ def send(event, *args, **kwds):
         func(*args, **kwds)
 
 
-def predict_metadata(document, set_tags=None):
+def predict_metadata(document: str, set_tags: List[str] = None) -> None:
     # returns a meta
     # -> key: [(value, proba)]
     pass
 
 
-def load_plugins(plugins=()):
+def load_plugins(plugins: List[str] = ()) -> None:
     for plugin in plugins:
         modname = f'papier.plugin.{plugin}'
         try:
