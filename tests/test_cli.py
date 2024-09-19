@@ -4,7 +4,6 @@ from unittest.mock import patch
 import sys
 
 
-
 def test_version(capsys):
     argv = ['papiers', 'version']
     with patch.object(sys, 'argv', argv):
