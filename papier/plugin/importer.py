@@ -11,6 +11,7 @@ import ocrmypdf
 from pypdf import PdfReader, PdfWriter
 import shutil
 from argcomplete.completers import FilesCompleter
+from typing import Generator, Dict, List
 
 
 # Logger for this plugin
@@ -21,7 +22,7 @@ log = logging.getLogger(__name__)
 PDF = re.compile(r'.*\.pdf', re.IGNORECASE)
 
 
-def find_pdfs(path):
+def find_pdfs(path: str) -> Generator[str]:
     """returns all the pdfs under a given path"""
     if os.path.isfile(path):
         if PDF.match(path):
@@ -31,7 +32,7 @@ def find_pdfs(path):
             yield from find_pdfs(os.path.join(path, p))
 
 
-def get_conf():
+def get_conf() -> str:
     """returns the import config"""
     params = {
         'copy': bool,
@@ -45,7 +46,7 @@ def get_conf():
     return papier.config['import'].get(params)
 
 
-def process(path):
+def process(path: str) -> None:
     log.info(f'processing {path}')
     cfg = get_conf()
     src = path
@@ -67,11 +68,13 @@ def process(path):
             pass
 
 
-def autotag(path, set_tags=None):
+def autotag(path: str, set_tags: Dict[str, str] = None) -> Dict[str, str]:
     return {}
 
 
-def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
+def tag(path: str,
+        tags: dict[str, str] = {"/Author": "Christophe-Marie Duquesne"}
+        ) -> str:
     with TempFile(dir='.', delete=False) as tmp:
         reader = PdfReader(path)
 
@@ -85,7 +88,7 @@ def tag(path, tags={"/Author": "Christophe-Marie Duquesne"}):
         return tmp.name
 
 
-def ocr(src, dst, redo_ocr=False):
+def ocr(src: str, dst: str, redo_ocr: bool = False) -> None:
     """runs ocr on the imput file"""
     try:
         ocrmypdf.ocr(src, dst, redo_ocr=redo_ocr, progress_bar=False)
@@ -93,7 +96,7 @@ def ocr(src, dst, redo_ocr=False):
         pass
 
 
-def split_pair(tag_pair):
+def split_pair(tag_pair: str) -> tuple[str, ...]:
     """splits the input string at the first equals sign"""
     i = tag_pair.find('=')
     if i == -1:
@@ -127,7 +130,7 @@ def split_pair(tag_pair):
                      help='Automatically tag the files',
                      default=argparse.SUPPRESS),
         command_name='import')
-def run(args):
+def run(args: List[...]) -> None:
     if hasattr(args, 'set_tag'):
         for tag_pair in args.set_tag:
             tag_key, tag_value = split_pair(tag_pair)
