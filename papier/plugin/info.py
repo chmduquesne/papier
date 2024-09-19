@@ -5,12 +5,12 @@ from typing import List
 
 
 @command()
-def showconf(args: List[...]) -> None:
+def showconf(args: List[Any, ...]) -> None:
     """show the loaded configuration"""
     print(papier.config.dump())
 
 
 @command()
-def version(args: List[...]) -> None:
+def version(args: List[Any, ...]) -> None:
     """show the installed version"""
     print(papier.__version__)
