@@ -10,20 +10,15 @@ tags they provide.
 from collections import namedtuple
 
 
-
 Predictor = namedtuple('Predictor', ['func', 'consumes', 'produces'])
-
 
 
 _predictors = []
 
 
-
 def register_predictor(func, produces=None, consumes=None):
     """Register a predictor, its preferred dependencies"""
     _predictors.append(Predictor(func, produces, consumes))
-
-
 
 
 def unsatisfied(predictors):
@@ -39,14 +34,12 @@ def unsatisfied(predictors):
     return res
 
 
-
-
 def resolve(predictors):
     """sort the predictors to minimize the total unmet dependencies"""
     res = []
     for p in predictors:
         possibilities = []
-        for i in range(len(curr) + 1):
+        for i in range(len(res) + 1):
             possibilities.append(res[:i] + [p] + res[i:])
         res = min(possibilities, key=unsatisfied)
     return res
