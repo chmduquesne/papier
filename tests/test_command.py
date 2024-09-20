@@ -2,17 +2,16 @@ import pytest
 from papier.cli.commands import command
 
 
-
-def test_command_decorator():
+def test_command_decorator() -> None:
     """test that we can register the command foo"""
     @command()
-    def foo():
+    def foo() -> None:
         pass
 
 
-def test_command_decorator_fails():
+def test_command_decorator_fails() -> None:
     """test that if we register the command foo a second time, it fails"""
     with pytest.raises(NameError):
         @command()
-        def foo():
+        def foo() -> None:
             pass
