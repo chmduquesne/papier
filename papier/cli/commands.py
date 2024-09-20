@@ -24,8 +24,8 @@ global_flags = ['dry_run']
 subparsers = cli.add_subparsers(dest='command')
 
 
-# Existing commands
-_existing_commands = set()
+# Module where each command is defined
+_command_module = dict()
 
 
 # Inspired by https://mike.depalatis.net/blog/simplifying-argparse.html
@@ -49,9 +49,11 @@ def command(*added_arguments: Any, command_name: str = None) -> Callable:
         name = command_name or func.__name__
 
         # Check if the command exists already
-        if name in _existing_commands:
-            raise NameError(f'{name} is already an existing command')
-        _existing_commands.add(name)
+        if name in _command_module:
+            raise NameError(
+                    f'{name} is already defined by {_command_module[name]}'
+                    )
+        _command_module[name] = func.__module__
 
         parser = subparsers.add_parser(name,
                                        description=func.__doc__,
