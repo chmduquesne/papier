@@ -1,6 +1,6 @@
 """Basic papier info. Imported before the command line gets parsed"""
 import confuse
-from .extractor import extractor
+from .extractor import extractor, extractors
 
 
 __all__ = ['extractor']

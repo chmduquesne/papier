@@ -3,6 +3,7 @@ import papier.plugins
 import argparse
 import argcomplete
 import logging
+import sys
 from typing import Any, Callable, Tuple, List, Dict
 
 
@@ -96,10 +97,15 @@ def add_argument(*names_or_flags: Any, **kwds: Any
 # Main entry point
 def main() -> None:
     # Start logging before we even parse the command line
-    logging.basicConfig(
-            filename=papier.config['log'].as_str(),
-            encoding='utf-8', level=logging.DEBUG
-    )
+    logfile = papier.config['log'].as_str()
+    if logfile != "-":
+        logging.basicConfig(
+                filename=logfile, encoding='utf-8', level=logging.DEBUG
+        )
+    else:
+        logging.basicConfig(
+                stream=sys.stdout, encoding='utf-8', level=logging.DEBUG
+        )
 
     # Load the plugins so that we know what commands must be parsed
     # Core plugins first, user-specified second to avoid collisions

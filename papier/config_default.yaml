@@ -1,6 +1,6 @@
 library: papier.sqlite
 directory: ~/papier
-log: papier.log
+log: "-"
 
 import:
   copy: yes
