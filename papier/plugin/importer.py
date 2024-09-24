@@ -7,9 +7,7 @@ from papier.cli.commands import command, add_argument
 import papier
 from tempfile import NamedTemporaryFile as TempFile
 import logging
-import ocrmypdf
 from pypdf import PdfReader, PdfWriter
-import shutil
 from argcomplete.completers import FilesCompleter
 from typing import Generator, Dict, List, Any
 
@@ -38,7 +36,7 @@ def get_conf() -> str:
         'copy': bool,
         'delete': bool,
         'modify': bool,
-        'ocr': bool,
+        'ocr': str,
         'redo_ocr': bool,
         'autotag': bool,
         'set_tag': dict
@@ -48,24 +46,14 @@ def get_conf() -> str:
 
 def process(path: str) -> None:
     log.info(f'processing {path}')
-    cfg = get_conf()
-    src = path
-    with TempFile() as tmp:
-        dst = tmp.name
-
-        # copy the file to dst, run ocr if necessary
-        shutil.copy(src, dst)
-        if cfg.ocr:
-            ocr(src, dst, redo_ocr=cfg.redo_ocr)
-        metadata = {}
-        set_tags = {k: v for k, v in cfg.set_tag.items()}
-        if cfg.autotag:
-            # autotag should be interactive and return a status
-            metadata |= autotag(dst, set_tags=set_tags)
-        if cfg.modify:
-            pass
-        if cfg.copy:
-            pass
+    papier.Document.from_import(path)
+    #    if cfg.autotag:
+    #        # autotag should be interactive and return a status
+    #        metadata |= autotag(dst, set_tags=set_tags)
+    #    if cfg.modify:
+    #        pass
+    #    if cfg.copy:
+    #        pass
 
 
 def autotag(path: str, set_tags: Dict[str, str] = None) -> Dict[str, str]:
@@ -88,14 +76,6 @@ def tag(path: str,
         return tmp.name
 
 
-def ocr(src: str, dst: str, redo_ocr: bool = False) -> None:
-    """runs ocr on the imput file"""
-    try:
-        ocrmypdf.ocr(src, dst, redo_ocr=redo_ocr, progress_bar=False)
-    except ocrmypdf.exceptions.PriorOcrFoundError:
-        pass
-
-
 def split_pair(tag_pair: str) -> tuple[str, ...]:
     """splits the input string at the first equals sign"""
     i = tag_pair.find('=')
@@ -112,16 +92,17 @@ def split_pair(tag_pair: str) -> tuple[str, ...]:
                      help='Copy files to the library directory after import',
                      default=argparse.SUPPRESS),
         add_argument('--delete', action=argparse.BooleanOptionalAction,
-                     help='Delete original files after copy',
+                     help='Delete files that were succesfully imported',
                      default=argparse.SUPPRESS),
-        add_argument('--modify', action=argparse.BooleanOptionalAction,
+        add_argument('--overwrite-text', action=argparse.BooleanOptionalAction,
+                     help='Rewrite the files copied to the library',
+                     default=argparse.SUPPRESS),
+        add_argument('--overwrite-tags', action=argparse.BooleanOptionalAction,
                      help='Rewrite the files copied to the library',
                      default=argparse.SUPPRESS),
         add_argument('--ocr', action=argparse.BooleanOptionalAction,
                      help='Run OCR prior to import if no text is embedded',
-                     default=argparse.SUPPRESS),
-        add_argument('--redo-ocr', action=argparse.BooleanOptionalAction,
-                     help='Run OCR on files prior to import in any case',
+                     choices=['always', 'never', 'empty'],
                      default=argparse.SUPPRESS),
         add_argument('--set-tag', action='append',
                      help='Set the given tag to the given value',

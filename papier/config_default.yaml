@@ -6,7 +6,7 @@ import:
   copy: yes
   delete: no
   modify: no
-  ocr: yes
+  ocr: empty
   redo_ocr: no
   autotag: yes
   set_tag:

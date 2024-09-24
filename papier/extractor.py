@@ -32,20 +32,21 @@ def unsatisfied(extractors: List[Extractor]) -> int:
     return res
 
 
+def register_extractor(e: Extractor) -> None:
+    def score(i: int) -> int:
+        """Number of unsatisfied dependencies for the list where e is
+        inserted in the position i"""
+        return unsatisfied(extractors[:i] + [e] + extractors[i:])
+
+    # Index of insertion with the minimal score
+    index_min = min(range(len(extractors) + 1), key=score)
+    extractors.insert(index_min, e)
+
+
 def extractor(produces: List[str] = [], consumes: List[str] = []
               ) -> Callable:
     """Register a function as an extractor, positioning it so that
     unsatisfied dependencies are minimized"""
     def decorator(func: Callable) -> None:
-        e = Extractor(func, consumes, produces)
-
-        def score(i: int) -> int:
-            """Number of unsatisfied dependencies for the list where e is
-            inserted in the position i"""
-            return unsatisfied(extractors[:i] + [e] + extractors[i:])
-
-        # Index of insertion with the minimal score
-        index_min = min(range(len(extractors) + 1), key=score)
-        extractors.insert(index_min, e)
-
+        register_extractor(Extractor(func, consumes, produces))
     return decorator
