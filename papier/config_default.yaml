@@ -1,6 +1,6 @@
 library: papier.sqlite
 directory: ~/papier
-log: "-"
+log: papier.log
 
 import:
   copy: yes
@@ -20,6 +20,9 @@ match:
 
 #plugins: [example]
 plugins: []
+#plugins:
+#  - date
+#  - lang
 
 path:
   basename: '{{ [business, date, subject] | reject("==", "") | join(" - ") }}.pdf'

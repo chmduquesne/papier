@@ -4,13 +4,13 @@ from typing import NamedTuple, Callable, List, Set, Self
 class Extractor(NamedTuple):
     """Extracts information from a document, possibly leveraging the
     result of previous extractors"""
-    func: Callable
+    extract: Callable
     consumes: List[str]
     produces: List[str]
 
     def __repr__(self: Self) -> str:
         return ('Extractor('
-                f'{self.func.__module__}.{self.func.__name__}, '
+                f'{self.extract.__module__}.{self.extract.__name__}, '
                 f'consumes={self.consumes}, '
                 f'produces={self.produces})')
 

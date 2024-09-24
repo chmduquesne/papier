@@ -46,14 +46,11 @@ def get_conf() -> str:
 
 def process(path: str) -> None:
     log.info(f'processing {path}')
-    papier.Document.from_import(path)
-    #    if cfg.autotag:
-    #        # autotag should be interactive and return a status
-    #        metadata |= autotag(dst, set_tags=set_tags)
-    #    if cfg.modify:
-    #        pass
-    #    if cfg.copy:
-    #        pass
+    doc = papier.Document.from_import(path)
+    tags = dict()
+    for e in papier.extractors:
+        tags |= e.extract(doc, tags)
+    print(tags)
 
 
 def autotag(path: str, set_tags: Dict[str, str] = None) -> Dict[str, str]:

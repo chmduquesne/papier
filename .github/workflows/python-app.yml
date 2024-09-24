@@ -36,4 +36,4 @@ jobs:
        flake8 --exclude papier/contentsniffer.py .
     - name: Test with pytest
       run: |
-        PYTHONPATH=. pytest
+        python -m pytest tests/

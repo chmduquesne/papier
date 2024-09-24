@@ -1,6 +1,8 @@
-confuse==2.0.1
-ocrmypdf==16.5.0
-pypdf==4.3.1
-argcomplete==3.5.0
-pytest==8.3.3
+confuse>=2.0.1
+ocrmypdf>=16.5.0
+pypdf>=4.3.1
+argcomplete>=3.5.0
+pytest>=8.3.3
 dateparser>=1.2.0
+spacy>=3.7.6
+spacy_fastlang>=2.1.0

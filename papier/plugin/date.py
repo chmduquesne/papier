@@ -1,15 +1,17 @@
+import papier
 import datetime
 import dateparser
+import dateparser.search
 from dateparser_data.settings import default_parsers
+from typing import Dict, Any
 
 
-def predict_date(doc: str, lang: str = None,
-                 ref: datetime.datetime = None) -> str:
-    import warnings
-    warnings.filterwarnings("ignore", module="dateparser")
+@papier.extractor(consumes=['lang'], produces=['date'])
+def extract_date(document: papier.Document, tags: Dict[str, Any]
+                 ) -> Dict[str, Any]:
 
-    if ref is None:
-        ref = datetime.datetime.now()
+    lang = tags['lang']
+    ref = datetime.datetime.now()
 
     settings = {}
     settings['REQUIRE_PARTS'] = ['year', 'month']
@@ -23,14 +25,15 @@ def predict_date(doc: str, lang: str = None,
     try:
         candidates = [(text, date) for (text, date) in
                       dateparser.search.search_dates(
-                          doc,
+                          document.text,
                           languages=languages,
                           settings=settings) if
                       date <= ref]
     except TypeError:
         candidates = []
 
+    res = 'XXXX-XX-XX'
     if len(candidates) > 0:
-        return candidates[0][1].strftime("%Y-%m-%d")
-    else:
-        return "XXXX-XX-XX"
+        res = candidates[0][1].strftime("%Y-%m-%d")
+
+    return {'date': res}
