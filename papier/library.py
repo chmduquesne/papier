@@ -5,15 +5,16 @@ import sqlite3
 def init() -> sqlite3.Connection:
     con = sqlite3.connect(papier.config["library"].get())
     with con as cursor:
-        cursor.execute("CREATE TABLE IF NOT EXISTS files("
+        cursor.execute("CREATE TABLE IF NOT EXISTS library("
+                       "sha256sum PRIMARY KEY, "
                        "path TEXT PRIMARY KEY, "
-                       "path_orig TEXT, "
                        "mtime REAL, "
-                       "content TEXT, "
+                       "text TEXT, "
                        "tags TEXT, "
                        ")")
+        # TODO find a way to store manual inputs
     return con
 
 
-def add(path_orig: str, path: str, content: str, tags: str) -> None:
+def add(doc: papier.Document) -> None:
     pass
