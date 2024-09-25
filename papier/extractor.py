@@ -1,4 +1,5 @@
-from typing import NamedTuple, Callable, List, Set, Self
+import papier
+from typing import NamedTuple, Callable, List, Set, Self, Dict, Any
 
 
 class Extractor(NamedTuple):
@@ -47,6 +48,7 @@ def extractor(produces: List[str] = [], consumes: List[str] = []
               ) -> Callable:
     """Register a function as an extractor, positioning it so that
     unsatisfied dependencies are minimized"""
-    def decorator(func: Callable) -> None:
+    def decorator(func: Callable[[papier.Document, Dict[str, Any]],
+                                 Dict[str, Any]]) -> None:
         register_extractor(Extractor(func, consumes, produces))
     return decorator
