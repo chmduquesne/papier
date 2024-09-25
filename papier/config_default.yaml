@@ -19,10 +19,9 @@ match:
     title: .75
 
 #plugins: [example]
-plugins: []
-#plugins:
-#  - date
-#  - lang
+plugins:
+  - date
+  - lang
 
 path:
   basename: '{{ [business, date, subject] | reject("==", "") | join(" - ") }}.pdf'

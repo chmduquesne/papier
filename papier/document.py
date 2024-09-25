@@ -5,6 +5,7 @@ import tempfile
 import os
 import shutil
 import ocrmypdf
+import hashlib
 
 
 class Document(NamedTuple):
@@ -12,11 +13,19 @@ class Document(NamedTuple):
     text: str
     path: str
     tmpfile: str
+    sha256sum: str
 
     def __del__(self: Self) -> None:
+        """Clean-up after ourselves"""
         if self.tmpfile != '':
             if os.path.exists(self.tmpfile):
                 os.remove(self.tmpfile)
+
+    def __repr__(self: Self) -> str:
+        """For debugging purposes"""
+        return (f'Document(path={self.path}, '
+                f'tmpfile={self.tmpfile}, '
+                f'sha256sum={self.sha256sum})')
 
     @classmethod
     def from_library(cls: Self, path: str) -> Self:
@@ -26,6 +35,9 @@ class Document(NamedTuple):
     @classmethod
     def from_import(cls: Self, path: str) -> Self:
         """Create a Document from a file to import"""
+        with open(path, 'rb', buffering=0) as f:
+            sha256sum = hashlib.file_digest(f, 'sha256').hexdigest()
+
         tmpfile = tempfile.NamedTemporaryFile(
                 delete=False).name
 
@@ -47,4 +59,4 @@ class Document(NamedTuple):
         text = ''
         for p in pdfreader.pages:
             text += p.extract_text()
-        return cls(pdfreader, text, path, tmpfile)
+        return cls(pdfreader, text, path, tmpfile, sha256sum)
