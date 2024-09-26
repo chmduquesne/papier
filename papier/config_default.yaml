@@ -23,6 +23,7 @@ match:
 plugins:
   - date
   - lang
+  - emmitter
 
 path:
   basename: '{{ [business, date, subject] | reject("==", "") | join(" - ") }}.pdf'

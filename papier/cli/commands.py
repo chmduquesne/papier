@@ -106,6 +106,7 @@ def main() -> None:
         logging.basicConfig(
                 stream=sys.stdout, encoding='utf-8', level=logging.DEBUG
         )
+    logging.captureWarnings(True)
 
     # Load the plugins so that we know what commands must be parsed
     # Core plugins first, user-specified second to avoid collisions
