@@ -1,8 +1,7 @@
 from typing import NamedTuple, Any, Self
 
 
-class Tag(NamedTuple):
-    name: str
+class TagValue(NamedTuple):
     type: str
     value: str
     confidence: float
@@ -13,4 +12,4 @@ class Tag(NamedTuple):
         possible_types = ('scalar', 'date', 'category')
         if type not in possible_types:
             raise ValueError(f'type(={type}) must be one of {possible_types}')
-        return Tag(name, type, str(value), confidence)
+        return TagValue(type, str(value), confidence)

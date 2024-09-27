@@ -5,6 +5,7 @@ import re
 import argparse
 from papier.cli.commands import command, add_argument
 import papier
+import papier.library
 from tempfile import NamedTemporaryFile as TempFile
 import logging
 from pypdf import PdfReader, PdfWriter
@@ -47,12 +48,18 @@ def get_conf() -> str:
 def process(path: str) -> None:
     log.info(f'processing {path}')
     doc = papier.Document.from_import(path)
+
+    if papier.library.has(doc):
+        log.info(f'skipping {path}')
+        return
+
     tags = dict()
     for e in papier.extractors:
         print(e)
         extracted = e.extract(doc, tags)
         print(extracted)
         tags |= extracted
+    papier.library.add(doc)
 
 
 def autotag(path: str, set_tags: Dict[str, str] = None) -> Dict[str, str]:

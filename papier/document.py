@@ -3,6 +3,7 @@ from typing import NamedTuple, Self, List, Dict, Any
 import pypdf
 import tempfile
 import os
+import os.path
 import shutil
 import ocrmypdf
 import hashlib
@@ -120,3 +121,6 @@ class Document(NamedTuple):
         if important == []:
             important = self._parts(by_size=True)
         return important
+
+    def mtime(self: Self) -> float:
+        return os.path.getmtime(self.path)
