@@ -1,6 +1,5 @@
 import papier
 from typing import Dict, Any
-from gliner import GLiNER
 import spacy
 
 

@@ -49,8 +49,10 @@ def process(path: str) -> None:
     doc = papier.Document.from_import(path)
     tags = dict()
     for e in papier.extractors:
-        tags |= e.extract(doc, tags)
-    print(tags)
+        print(e)
+        extracted = e.extract(doc, tags)
+        print(extracted)
+        tags |= extracted
 
 
 def autotag(path: str, set_tags: Dict[str, str] = None) -> Dict[str, str]:
