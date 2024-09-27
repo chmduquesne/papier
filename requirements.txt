@@ -6,3 +6,4 @@ pytest>=8.3.3
 dateparser>=1.2.0
 spacy>=3.7.6
 spacy_fastlang>=2.1.0
+gliner-spacy>=0.0.10

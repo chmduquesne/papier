@@ -1,21 +1,33 @@
 import papier
 from typing import Dict, Any
 from gliner import GLiNER
+import spacy
 
 
 @papier.extractor(consumes=['lang'], produces=['emmitter'])
 def extract_emmitter(document: papier.Document, tags: Dict[str, Any]
                      ) -> Dict[str, Any]:
+    if 'lang' not in tags:
+        return {}
+    lang = tags['lang']
+
     emmitter = ''
 
-    model = GLiNER.from_pretrained('gliner-community/gliner_small-v2.5')
+    gliner_config = {
+            'gliner_model': 'gliner-community/gliner_small-v2.5',
+            'chunk_size': 250,
+            'labels': ['person', 'company'],
+            'style': 'ent'
+            }
 
-    labels = ['person', 'company', 'date']
+    nlp = spacy.blank(lang)
+    nlp.add_pipe('gliner_spacy', config=gliner_config)
+
     for part in document.important_parts():
-        entities = model.predict_entities(part, labels)
-        for entity in entities:
-            if entity['label'] == 'company':
-                emmitter = entity['text']
+        doc = nlp(part)
+        for ent in doc.ents:
+            if ent.label_ == 'company':
+                emmitter = ent.text
                 break
         if emmitter:
             break
