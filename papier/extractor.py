@@ -1,5 +1,6 @@
 import papier
 from typing import NamedTuple, Callable, List, Set, Self, Dict, Any
+import collections
 
 
 class Extractor(NamedTuple):
@@ -18,6 +19,9 @@ class Extractor(NamedTuple):
 
 # List of registered extractors
 extractors: List[Extractor] = []
+
+# Map modules to the tags they extract
+modules = collections.defaultdict(list)
 
 
 def unsatisfied(extractors: List[Extractor]) -> int:
@@ -41,6 +45,15 @@ def register_extractor(e: Extractor) -> None:
 
     # Index of insertion with the minimal score
     index_min = min(range(len(extractors) + 1), key=score)
+
+    # A module shall not register 2 extractors for the same tag
+    module = e.extract.__module__
+    for p in e.produces:
+        if p not in modules[module]:
+            modules[module].append(p)
+        else:
+            raise NameError(f'{module} registers 2 extractors for "{p}"')
+
     extractors.insert(index_min, e)
 
 
