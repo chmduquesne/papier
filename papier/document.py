@@ -1,5 +1,5 @@
 import papier
-from typing import NamedTuple, Self, List, Dict, Any
+from typing import Self, List, Dict, Any
 import pypdf
 import tempfile
 import os
@@ -8,6 +8,7 @@ import shutil
 import ocrmypdf
 import hashlib
 import re
+from dataclasses import dataclass, field
 
 
 def normalized(text: str) -> str:
@@ -32,12 +33,14 @@ def normalized(text: str) -> str:
     return res
 
 
-class Document(NamedTuple):
-    pdfreader: pypdf.PdfReader
-    text: str
+@dataclass
+class Document():
     path: str
-    tmpfile: str
-    sha256sum: str
+    pdfreader: pypdf.PdfReader = field(default=None, init=False,
+                                       repr=False)
+    text: str = field(default="", init=False, repr=False)
+    tmpfile: str = field(default="", init=False)
+    sha256sum_: str = field(default="", init=False)
 
     def __del__(self: Self) -> None:
         """Clean-up after ourselves"""
@@ -45,11 +48,11 @@ class Document(NamedTuple):
             if os.path.exists(self.tmpfile):
                 os.remove(self.tmpfile)
 
-    def __repr__(self: Self) -> str:
-        """For debugging purposes"""
-        return (f'Document(path={self.path}, '
-                f'tmpfile={self.tmpfile}, '
-                f'sha256sum={self.sha256sum})')
+    def sha256sum(self: Self) -> str:
+        if self.sha256sum_ == '':
+            with open(self.path, 'rb', buffering=0) as f:
+                self.sha256sum_ = hashlib.file_digest(f, 'sha256').hexdigest()
+        return self.sha256sum_
 
     @classmethod
     def from_library(cls: Self, path: str) -> Self:
@@ -59,12 +62,9 @@ class Document(NamedTuple):
     @classmethod
     def from_import(cls: Self, path: str) -> Self:
         """Create a Document from a file to import"""
-        with open(path, 'rb', buffering=0) as f:
-            sha256sum = hashlib.file_digest(f, 'sha256').hexdigest()
+        res = cls(path)
 
-        tmpfile = tempfile.NamedTemporaryFile(
-                delete=False).name
-
+        tmpfile = tempfile.NamedTemporaryFile(delete=False).name
         ocr = papier.config['import']['ocr'].get(str)
         match ocr:
             case 'never':
@@ -77,14 +77,17 @@ class Document(NamedTuple):
                 except ocrmypdf.exceptions.PriorOcrFoundError:
                     shutil.copy(path, tmpfile)
             case _:
-                raise ValueError('unexpected config value')
+                raise ValueError('ocr={ocr}: unexpected config value"')
+        res.tmpfile = tmpfile
 
-        pdfreader = pypdf.PdfReader(tmpfile)
+        res.pdfreader = pypdf.PdfReader(tmpfile)
+
         text = ''
-        for p in pdfreader.pages:
+        for p in res.pdfreader.pages:
             text += p.extract_text()
-        text = normalized(text)
-        return cls(pdfreader, text, path, tmpfile, sha256sum)
+        res.text = normalized(text)
+
+        return res
 
     def _parts(self: Self, bold: bool = False, by_size: bool = False
                ) -> List[str]:

@@ -29,14 +29,21 @@ def add(doc: papier.Document) -> None:
            '(sha256sum, path, mtime, text) '
            'VALUES(?, ?, ?, ?)')
     with sqlite3.connect(papier.config['library'].get()) as cursor:
-        cursor.execute(sql, (doc.sha256sum, doc.path, doc.mtime(), doc.text))
+        cursor.execute(sql, (doc.sha256sum(), doc.path, doc.mtime(), doc.text))
 
 
 def has(doc: papier.Document) -> bool:
     log.info(f'checking if {doc} is in the library')
+    # First, check if the path of the document exists with the same mtime
+    sql = 'SELECT * FROM library WHERE path = ? and mtime = ?'
+    with sqlite3.connect(papier.config['library'].get()) as cursor:
+        res = cursor.execute(sql, (doc.path, doc.mtime()))
+        rows = res.fetchall()
+        if len(rows) == 1:
+            return True
     sql = 'SELECT * FROM library WHERE sha256sum = ?'
     with sqlite3.connect(papier.config['library'].get()) as cursor:
-        res = cursor.execute(sql, (doc.sha256sum,))
+        res = cursor.execute(sql, (doc.sha256sum(),))
         if len(res.fetchall()) > 0:
             return True
     return False
