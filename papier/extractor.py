@@ -1,20 +1,20 @@
 import papier
-from typing import NamedTuple, Callable, List, Set, Self, Dict, Any
+from typing import Callable, List, Set, Self, Dict, Any
 import collections
+from dataclasses import dataclass, field
 
 
-class Extractor(NamedTuple):
+@dataclass
+class Extractor():
     """Extracts information from a document, possibly leveraging the
     result of previous extractors"""
-    extract: Callable
+    extract: Callable = field(repr=False)
+    plugin: str = field(default='', init=False)
     consumes: List[str]
     produces: List[str]
 
-    def __repr__(self: Self) -> str:
-        return ('Extractor('
-                f'{self.extract.__module__}.{self.extract.__name__}, '
-                f'consumes={self.consumes}, '
-                f'produces={self.produces})')
+    def __post_init__(self: Self) -> None:
+        self.plugin = self.extract.__module__.split('.')[-1]
 
 
 # List of registered extractors
