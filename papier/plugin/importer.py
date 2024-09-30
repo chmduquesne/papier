@@ -58,20 +58,23 @@ def process(path: str) -> None:
     for e in papier.extractors:
         # TODO: have the extractor return choices if not sure
         extracted = e.extract(doc, tags)
-        for tag, value in extracted.items():
-            if tag not in tags:
-                tags[tag] = value
-            else:
-                log.info(f'conflict on tag {tag}')
+
+        for tag in extracted:
+            if tag in tags:
                 try:
-                    prios = papier.config['autotag']['priority'].get(dict)
-                    if tag in prios and e.plugin == prios[tag]:
-                        tags[tag] = value
-                except confuse.exceptions.ConfigError:
-                    raise confuse.ConfigError(
-                            f'"{e.plugin}" is trying to overwrite "{tag}".\n'
+                    prio = papier.config['autotag']['priority'][tag].get()
+                    if e.plugin == prio:
+                        del tags[tag]
+                    else:
+                        del extracted[tag]
+                except confuse.ConfigError:
+                    raise Exception(
+                            f'"{e.plugin}" is trying to overwrite "{tag}". '
                             f'Please specify config.autotag.priority.{tag}'
                             )
+
+        tags |= extracted
+
     print(tags)
 
 
