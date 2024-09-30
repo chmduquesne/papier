@@ -2,6 +2,7 @@ import papier
 from typing import Callable, List, Set, Self, Dict, Any
 import collections
 from dataclasses import dataclass, field
+import functools
 
 
 @dataclass
@@ -62,6 +63,12 @@ def extractor(produces: List[str] = [], consumes: List[str] = []
     """Register a function as an extractor, positioning it so that
     unsatisfied dependencies are minimized"""
     def decorator(func: Callable[[papier.Document, Dict[str, Any]],
-                                 Dict[str, Any]]) -> None:
+                                 Dict[str, Any]]) -> Callable:
         register_extractor(Extractor(func, consumes, produces))
+
+        @functools.wraps
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            return func(*args, **kwargs)
+
+        return wrapper
     return decorator
