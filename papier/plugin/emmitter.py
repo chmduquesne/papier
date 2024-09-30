@@ -1,11 +1,11 @@
 import papier
-from typing import Dict, Any
+from typing import Any
 import spacy
 
 
 @papier.extractor(consumes=['lang'], produces=['emmitter'])
-def extract_emmitter(document: papier.Document, tags: Dict[str, Any]
-                     ) -> Dict[str, Any]:
+def extract_emmitter(document: papier.Document, tags: dict[str, Any]
+                     ) -> tuple[dict[str, Any], dict[str, Any]]:
     if 'lang' not in tags:
         return {}
     lang = tags['lang']
@@ -30,4 +30,4 @@ def extract_emmitter(document: papier.Document, tags: Dict[str, Any]
                 break
         if emmitter:
             break
-    return {'emmitter': emmitter}
+    return ({'emmitter': emmitter}, {})

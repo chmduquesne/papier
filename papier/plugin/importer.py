@@ -54,26 +54,32 @@ def process(path: str) -> None:
         log.info(f'skipping {path}')
         return
 
-    tags = dict()
+    tags, choices = dict(), dict()
     for e in papier.extractors:
         # TODO: have the extractor return choices if not sure
-        extracted = e.extract(doc, tags)
+        print(e)
+        sure, unsure = e.extract(doc, tags)
+        for tag in unsure:
+            sure.pop(tag, None)
 
-        for tag in extracted:
-            if tag in tags:
+        for tag in sure | unsure:
+            if tag in tags | choices:
                 try:
                     prio = papier.config['autotag']['priority'][tag].get()
                     if e.plugin == prio:
-                        del tags[tag]
+                        tags.pop(tag, None)
+                        choices.pop(tag, None)
                     else:
-                        del extracted[tag]
+                        sure.pop(tag, None)
+                        unsure.pop(tag, None)
                 except confuse.ConfigError:
                     raise Exception(
                             f'"{e.plugin}" is trying to overwrite "{tag}". '
                             f'Please specify config.autotag.priority.{tag}'
                             )
 
-        tags |= extracted
+        tags |= sure
+        choices |= unsure
 
     print(tags)
 

@@ -20,7 +20,7 @@ import:
 autotag:
   # which plugin should be used for which tag
   priority:
-    #date: date
+    date: date
   # confidence required for the tagging to be considered successful
   accept:
     date: .90

@@ -3,12 +3,12 @@ import datetime
 import dateparser
 import dateparser.search
 from dateparser_data.settings import default_parsers
-from typing import Dict, Any
+from typing import Any
 
 
 @papier.extractor(consumes=['lang'], produces=['date'])
-def extract_date(document: papier.Document, tags: Dict[str, Any]
-                 ) -> Dict[str, Any]:
+def extract_date(document: papier.Document, tags: dict[str, Any]
+                 ) -> tuple[dict[str, Any], dict[str, Any]]:
 
     lang = tags['lang']
     ref = datetime.datetime.now()
@@ -36,4 +36,4 @@ def extract_date(document: papier.Document, tags: Dict[str, Any]
     if len(candidates) > 0:
         res = candidates[0][1].strftime("%Y-%m-%d")
 
-    return {'date': res}
+    return ({'date': res}, {})
