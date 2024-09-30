@@ -4,8 +4,7 @@ pypdf>=4.3.1
 argcomplete>=3.5.0
 pytest>=8.3.3
 dateparser>=1.2.0
-spacy>=3.7.6
+spacy
 spacy_fastlang>=2.1.0
 gliner-spacy>=0.0.10
 date-spacy>=0.0.1
-#https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
