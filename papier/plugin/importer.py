@@ -6,11 +6,12 @@ import argparse
 from papier.cli.commands import command, add_argument
 import papier
 import papier.library
+import confuse
 from tempfile import NamedTemporaryFile as TempFile
 import logging
 from pypdf import PdfReader, PdfWriter
 from argcomplete.completers import FilesCompleter
-from typing import Generator, Dict, List, Any
+from typing import Generator, List, Any
 
 
 # Logger for this plugin
@@ -55,15 +56,23 @@ def process(path: str) -> None:
 
     tags = dict()
     for e in papier.extractors:
-        print(e)
+        # TODO: have the extractor return choices if not sure
         extracted = e.extract(doc, tags)
-        print(extracted)
-        tags |= extracted
-    papier.library.add(doc)
-
-
-def autotag(path: str, set_tags: Dict[str, str] = None) -> Dict[str, str]:
-    return {}
+        for tag, value in extracted.items():
+            if tag not in tags:
+                tags[tag] = value
+            else:
+                log.info(f'conflict on tag {tag}')
+                try:
+                    prios = papier.config['autotag']['priority'].get(dict)
+                    if tag in prios and e.plugin == prios[tag]:
+                        tags[tag] = value
+                except confuse.exceptions.ConfigError:
+                    raise confuse.ConfigError(
+                            f'"{e.plugin}" is trying to overwrite "{tag}".\n'
+                            f'Please specify config.autotag.priority.{tag}'
+                            )
+    print(tags)
 
 
 def tag(path: str,

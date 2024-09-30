@@ -1,15 +1,25 @@
-from typing import NamedTuple, Any, Self
+from collections import UserDict
+from typing import Any, Self
+from dataclasses import dataclass, field
 
 
-class TagValue(NamedTuple):
-    type: str
-    value: str
-    confidence: float
+@dataclass
+class TagValue():
+    value: Any
+    type: str = field(default='category', init=False)
+    confidence: float = field(default=-1.0, init=False)
 
-    @classmethod
-    def from_values(name: str, type: str, value: Any, confidence: float
-                    ) -> Self:
-        possible_types = ('scalar', 'date', 'category')
-        if type not in possible_types:
-            raise ValueError(f'type(={type}) must be one of {possible_types}')
-        return TagValue(type, str(value), confidence)
+    def __hash__(self: Self) -> int:
+        return hash(self.value) + hash(self.type)
+
+    def __post_init__(self: Self) -> None:
+        valid_types = ('category', 'scalar')
+        if self.type not in valid_types:
+            raise ValueError(
+                    f'type must be one of {valid_types} (got {self.type})')
+
+    def set_confidence(self: Self, confidence: float) -> None:
+        self.confidence = confidence
+
+
+Tags = UserDict[str, TagValue]

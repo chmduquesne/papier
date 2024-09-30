@@ -12,16 +12,25 @@ import:
   autotag: yes
   set_tag:
     tagged_by: papier
+  require:
+    - date
+    - lang
+    - emmitter
 
-match:
-  threshold:
-    author: .95
-    date: .95
-    title: .75
+autotag:
+  # which plugin should be used for which tag
+  priority:
+    #date: date
+  # confidence required for the tagging to be considered successful
+  accept:
+    date: .90
+    lang: .90
+    emmitter: .70
 
 #plugins: [example]
 plugins:
   - date
+  - date_spacy
   - lang
   - emmitter
 
