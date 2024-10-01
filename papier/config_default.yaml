@@ -22,11 +22,6 @@ autotag:
   # which plugin should be used for which tag
   priority:
     date: date
-  # confidence required for the tagging to be considered successful
-  accept:
-    date: .90
-    lang: .90
-    emmitter: .70
 
 #plugins: [example]
 plugins:
@@ -37,5 +32,7 @@ plugins:
   - read_tags
   - set_tags
 
-path:
-  basename: '{{ [business, date, subject] | reject("==", "") | join(" - ") }}.pdf'
+organize:
+  - when:
+    - all([emmitter, date, subject])
+    path: 'misc/{{ emmitter }} - {{ date }} - {{ subject }}.pdf'
