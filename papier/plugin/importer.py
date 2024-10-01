@@ -87,9 +87,14 @@ def process(path: str) -> None:
 
     required = papier.config['import']['require'].get(list)
 
+    # filter out non required tags
+    unwanted = set(choices) - set(required)
+    for k in unwanted:
+        del choices[k]
+
     # TODO: add a procedure to choose when unsure
-    if any([tag in choices for tag in required]):
-        pass
+    if choices:
+        log.info(f'Missing tags: {list(choices.keys())}')
 
     if all([tag in tags for tag in required]):
         log.info(f'All required tags are set for {doc}, adding to library')
