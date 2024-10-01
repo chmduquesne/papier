@@ -33,6 +33,7 @@ plugins:
   - date_spacy
   - lang
   - emmitter
+  - read_tags
 
 path:
   basename: '{{ [business, date, subject] | reject("==", "") | join(" - ") }}.pdf'
