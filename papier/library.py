@@ -41,6 +41,7 @@ def has(doc: papier.Document) -> bool:
         rows = res.fetchall()
         if len(rows) == 1:
             return True
+    # Then, check the checksum
     sql = 'SELECT * FROM library WHERE sha256sum = ?'
     with sqlite3.connect(papier.config['library'].get()) as cursor:
         res = cursor.execute(sql, (doc.sha256sum(),))
