@@ -29,12 +29,6 @@ def send(event: str, *args: Tuple[Any, ...], **kwds: Dict[str, Any]) -> None:
         func(*args, **kwds)
 
 
-def predict_metadata(document: str, set_tags: List[str] = None) -> None:
-    # returns a meta
-    # -> key: [(value, proba)]
-    pass
-
-
 def load_plugins(plugins: List[str] = ()) -> None:
     for plugin in plugins:
         modname = f'papier.plugin.{plugin}'
