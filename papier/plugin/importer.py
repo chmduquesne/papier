@@ -41,7 +41,7 @@ def get_conf() -> str:
         'ocr': str,
         'redo_ocr': bool,
         'autotag': bool,
-        'set_tag': dict
+        'set': dict
         }
     return papier.config['import'].get(params)
 
@@ -57,7 +57,7 @@ def process(path: str) -> None:
     tags, choices = dict(), dict()
     for e in papier.extractors:
         # TODO: have the extractor return choices if not sure
-        print(e)
+        log.info(f'Running extractor: {e}')
         sure, unsure = e.extract(doc, tags)
         for tag in unsure:
             sure.pop(tag, None)
@@ -66,7 +66,8 @@ def process(path: str) -> None:
             if tag in tags | choices:
                 try:
                     prio = papier.config['autotag']['priority'][tag].get()
-                    if e.plugin == prio:
+                    # tags manually set always win
+                    if e.plugin == prio or e.plugin == 'set_tags':
                         tags.pop(tag, None)
                         choices.pop(tag, None)
                     else:
@@ -81,7 +82,19 @@ def process(path: str) -> None:
         tags |= sure
         choices |= unsure
 
-    print(tags)
+    log.info(f'tags: {tags}')
+    log.info(f'choices: {choices}')
+
+    required = papier.config['import']['require'].get(list)
+
+    # TODO: add a procedure to choose when unsure
+    if any([tag in choices for tag in required]):
+        pass
+
+    if all([tag in tags for tag in required]):
+        log.info(f'All required tags are set for {doc}, adding to library')
+        if not papier.config['dry_run'].get(bool):
+            papier.library.add(doc)
 
 
 def tag(path: str,
@@ -105,7 +118,7 @@ def split_pair(tag_pair: str) -> tuple[str, ...]:
     i = tag_pair.find('=')
     if i == -1:
         raise argparse.ArgumentError(
-                'Wrong argument for --set-tag: expected <key>=<value>')
+                'Wrong argument for --set: expected <key>=<value>')
     return (tag_pair[:i], tag_pair[i+1:])
 
 
@@ -128,7 +141,7 @@ def split_pair(tag_pair: str) -> tuple[str, ...]:
                      help='Run OCR prior to import if no text is embedded',
                      choices=['always', 'never', 'empty'],
                      default=argparse.SUPPRESS),
-        add_argument('--set-tag', action='append',
+        add_argument('--set', action='append',
                      help='Set the given tag to the given value',
                      default=argparse.SUPPRESS),
         add_argument('--autotag', action=argparse.BooleanOptionalAction,
@@ -136,11 +149,11 @@ def split_pair(tag_pair: str) -> tuple[str, ...]:
                      default=argparse.SUPPRESS),
         command_name='import')
 def run(args: List[Any]) -> None:
-    if hasattr(args, 'set_tag'):
-        for tag_pair in args.set_tag:
+    if hasattr(args, 'set'):
+        for tag_pair in args.set:
             tag_key, tag_value = split_pair(tag_pair)
-            papier.config['import']['set_tag'][tag_key].set(tag_value)
-        del args.__dict__['set_tag']
+            papier.config['import']['set'][tag_key].set(tag_value)
+        del args.__dict__['set']
 
     papier.config['import'].set_args(args)
     for p in find_pdfs(args.path):

@@ -1,6 +1,7 @@
 library: papier.sqlite
 directory: ~/papier
 log: papier.log
+dry_run: False
 #log: "-"
 
 import:
@@ -10,8 +11,8 @@ import:
   ocr: empty
   redo_ocr: no
   autotag: yes
-  set_tag:
-    tagged_by: papier
+  set:
+    tagger: papier
   require:
     - date
     - lang
@@ -34,6 +35,7 @@ plugins:
   - lang
   - emmitter
   - read_tags
+  - set_tags
 
 path:
   basename: '{{ [business, date, subject] | reject("==", "") | join(" - ") }}.pdf'
