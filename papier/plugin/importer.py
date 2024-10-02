@@ -12,6 +12,7 @@ import logging
 from pypdf import PdfReader, PdfWriter
 from argcomplete.completers import FilesCompleter
 from typing import Generator, List, Any
+import tqdm
 
 
 # Logger for this plugin
@@ -49,13 +50,17 @@ def get_conf() -> str:
 def process(path: str) -> None:
     log.info(f'processing {path}')
     doc = papier.Document.from_import(path)
+    progress = papier.config['progress'].get(bool)
 
     if papier.library.has(doc):
         log.info(f'skipping {path}')
         return
 
     tags, choices = dict(), dict()
-    for e in papier.extractors:
+
+    progressbar = tqdm.tqdm(papier.extractors, disable=(not progress))
+    for e in progressbar:
+        progressbar.set_description(f'[{doc.path}] running {e.plugin}')
         # TODO: have the extractor return choices if not sure
         log.info(f'Running extractor: {e}')
         sure, unsure = e.extract(doc, tags)

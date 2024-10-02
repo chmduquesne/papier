@@ -2,7 +2,7 @@ import papier
 from typing import Any
 import spacy
 import logging
-import huggingface_hub
+import huggingface_hub.utils
 
 
 # Get rid of the annoying message from transformers/tokenization_utils_base.py

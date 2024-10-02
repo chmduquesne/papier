@@ -17,8 +17,11 @@ cli = argparse.ArgumentParser(
 # Global flags
 cli.add_argument('--dry-run', action='store_true',
                  help='Run without making any modification',
-                 default=argparse.SUPPRESS)
-global_flags = ['dry_run']
+                 default=False)
+cli.add_argument('--progress', action=argparse.BooleanOptionalAction,
+                 help='See progress bars',
+                 default=True)
+global_flags = ['dry_run', 'progress']
 
 
 # Add the commands
