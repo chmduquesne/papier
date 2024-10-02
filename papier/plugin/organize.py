@@ -8,11 +8,16 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
 
     rules = papier.config['organize'].get(list)
     for rule in rules:
-        when = rule['when']
-        conditions = []
-        for statement in when:
-            rendered = env.from_string(statement).render(**tags)
-            conditions.append(rendered == 'True')
+        # If there is no 'when' statement, we assume a pass
+        conditions = [True]
+        if 'when' in rules:
+            when = rule['when']
+            for statement in when:
+                # every statement should render as 'True'
+                rendered = (env
+                            .from_string('{{ ' + statement + '}}')
+                            .render(**tags))
+                conditions.append(rendered == 'True')
         if all(conditions):
             path = rule['path']
             return env.from_string(path).render(**tags)
