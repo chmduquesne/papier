@@ -14,6 +14,7 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
         # process the conditions
         if 'when' in rules:
             when = rule['when']
+            conditions = []
             for statement in when:
                 # every statement should render as 'True'
                 rendered = (env
