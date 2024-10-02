@@ -2,7 +2,6 @@ library: papier.sqlite
 directory: ~/papier
 log: papier.log
 dry_run: False
-#log: "-"
 
 import:
   copy: yes
@@ -23,7 +22,7 @@ autotag:
   priority:
     date: date
 
-#plugins: [example]
+#plugins: []
 plugins:
   - date
   - date_spacy
