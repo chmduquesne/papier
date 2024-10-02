@@ -8,8 +8,10 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
 
     rules = papier.config['organize'].get(list)
     for rule in rules:
-        # If there is no 'when' statement, we assume a pass
-        conditions = [True]
+        # proceed by default (no 'when' statement)
+        proceed = True
+
+        # process the conditions
         if 'when' in rules:
             when = rule['when']
             for statement in when:
@@ -18,10 +20,15 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
                             .from_string('{{ ' + statement + '}}')
                             .render(**tags))
                 conditions.append(rendered == 'True')
-        if all(conditions):
+            proceed = all(conditions)
+
+        # Render the desired path
+        if proceed:
             path = rule['path']
             return env.from_string(path).render(**tags)
-    raise Exception('could not match the document with a rule')
+
+    # If no rule was matched, return the existing path
+    return document.path
 
 
 def organize(document: papier.Document, tags: dict[str, str]) -> None:
