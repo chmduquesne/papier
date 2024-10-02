@@ -29,7 +29,6 @@ plugins:
   - lang
   - emmitter
   - read_tags
-  - set_tags
 
 organize:
   - when:
