@@ -79,7 +79,7 @@ def process(path: str) -> None:
                         sure.pop(tag, None)
                         unsure.pop(tag, None)
                 except confuse.ConfigError:
-                    raise Exception(
+                    raise papier.ConfigError(
                             f'"{e.plugin}" is trying to overwrite "{tag}". '
                             f'Please specify config.autotag.priority.{tag}'
                             )
@@ -127,7 +127,7 @@ def split_pair(tag_pair: str) -> tuple[str, ...]:
     """splits the input string at the first equals sign"""
     i = tag_pair.find('=')
     if i == -1:
-        raise argparse.ArgumentError(
+        raise papier.CommandError(
                 'Wrong argument for --set: expected <key>=<value>')
     return (tag_pair[:i], tag_pair[i+1:])
 

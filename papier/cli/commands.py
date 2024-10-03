@@ -54,7 +54,7 @@ def command(*added_arguments: Any, command_name: str = None) -> Callable:
 
         # Check if the command exists already
         if name in _command_module:
-            raise NameError(
+            raise papier.PluginError(
                     f'{name} is already defined by {_command_module[name]}'
                     )
         _command_module[name] = func.__module__

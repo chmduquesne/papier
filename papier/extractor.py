@@ -21,8 +21,8 @@ class Extractor():
 # List of registered extractors
 extractors: List[Extractor] = []
 
-# Map modules to the tags they extract
-modules = collections.defaultdict(list)
+# Map plugins to the tags they extract
+plugins = collections.defaultdict(list)
 
 
 def unsatisfied(extractors: List[Extractor]) -> int:
@@ -47,13 +47,13 @@ def register_extractor(e: Extractor) -> None:
     # Index of insertion with the minimal score
     index_min = min(range(len(extractors) + 1), key=score)
 
-    # A module shall not register 2 extractors for the same tag
-    module = e.extract.__module__
+    # A plugin shall not register 2 extractors for the same tag
+    plugin = e.plugin
     for p in e.produces:
-        if p not in modules[module]:
-            modules[module].append(p)
+        if p not in plugins[plugin]:
+            plugins[plugin].append(p)
         else:
-            raise NameError(f'{module} registers 2 extractors for "{p}"')
+            raise papier.PluginError(f'{plugin} registers 2 extractors for "{p}"')
 
     extractors.insert(index_min, e)
 

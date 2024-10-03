@@ -1,4 +1,5 @@
 import pytest
+import papier
 import papier.extractor
 from typing import Dict, Any
 
@@ -11,7 +12,7 @@ def test_extractors() -> None:
 
 def test_extractors_same_tag() -> None:
     """test that a module cannot register 2 extractors for the same tag"""
-    with pytest.raises(NameError):
+    with pytest.raises(papier.PluginError):
         @papier.extractor(produces=['foo'])
         def foo() -> Dict[str, Any]:
             return {}

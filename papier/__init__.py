@@ -2,9 +2,11 @@
 import confuse
 from .extractor import extractor, extractors
 from .document import Document
+from .errors import PapierError, ConfigError, CommandError, PluginError
 
 
-__all__ = ['extractor', 'extractors', 'Document']
+__all__ = ['extractor', 'extractors', 'Document', 'PapierError',
+           'ConfigError', 'CommandError', 'PluginError']
 __version__ = '0.0.1'
 __author__ = 'Christophe-Marie Duquesne <chmd+papier@chmd.fr>'
 

@@ -77,7 +77,7 @@ class Document():
                 except ocrmypdf.exceptions.PriorOcrFoundError:
                     shutil.copy(path, tmpfile)
             case _:
-                raise ValueError('ocr={ocr}: unexpected config value"')
+                raise papier.ConfigError('ocr={ocr}: unexpected config value"')
         res.tmpfile = tmpfile
 
         res.pdfreader = pypdf.PdfReader(tmpfile)

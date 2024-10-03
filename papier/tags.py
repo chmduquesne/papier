@@ -1,6 +1,7 @@
 from collections import UserDict
 from typing import Any, Self
 from dataclasses import dataclass, field
+# TODO: unnecessary class?
 
 
 @dataclass
