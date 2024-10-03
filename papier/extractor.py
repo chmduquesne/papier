@@ -30,11 +30,11 @@ def unsatisfied(extractors: List[Extractor]) -> int:
     produced: Set[str] = set()
     res = 0
     for e in extractors:
-        for c in e.consumes:
-            if c not in produced:
+        for tag in e.consumes:
+            if tag not in produced:
                 res += 1
-        for p in e.produces:
-            produced.add(p)
+        for tag in e.produces:
+            produced.add(tag)
     return res
 
 
@@ -49,11 +49,12 @@ def register_extractor(e: Extractor) -> None:
 
     # A plugin shall not register 2 extractors for the same tag
     plugin = e.plugin
-    for p in e.produces:
-        if p not in plugins[plugin]:
-            plugins[plugin].append(p)
+    for tag in e.produces:
+        if tag not in plugins[plugin]:
+            plugins[plugin].append(tag)
         else:
-            raise papier.PluginError(f'{plugin} registers 2 extractors for "{p}"')
+            raise papier.PluginError(
+                    f'{plugin} registers 2 extractors for "{tag}"')
 
     extractors.insert(index_min, e)
 
