@@ -60,10 +60,10 @@ def process(path: str) -> None:
 
     progressbar = tqdm.tqdm(papier.extractors, disable=(not progress))
     for e in progressbar:
-        progressbar.set_description(f'[{doc.path}] running {e.plugin}')
-        # TODO: have the extractor return choices if not sure
-        log.info(f'Running extractor: {e}')
+        progressbar.set_description(f'[{doc.path}] {e.plugin}')
+
         sure, unsure = e.extract(doc, tags)
+
         for tag in unsure:
             sure.pop(tag, None)
 
