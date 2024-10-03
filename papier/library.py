@@ -48,3 +48,9 @@ def has(doc: papier.Document) -> bool:
         if len(res.fetchall()) > 0:
             return True
     return False
+
+
+def update(doc: papier.Document) -> None:
+    log.info(f'updating {doc} in the library')
+    # TODO: do it
+    raise NotImplementedError

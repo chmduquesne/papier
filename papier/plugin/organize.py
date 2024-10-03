@@ -1,6 +1,12 @@
 import papier
 # from papier.cli.commands import command, add_argument
 import jinja2
+import os.path
+import logging
+import shutil
+
+# Logger for this plugin
+log = logging.getLogger(__name__)
 
 
 def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
@@ -33,4 +39,23 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
 
 
 def organize(document: papier.Document, tags: dict[str, str]) -> None:
-    pass
+    libdir = papier.config['directory'].as_path()
+    desired = desired_path(document, tags)
+    desired = os.path.join(libdir, desired)
+    dest = desired
+
+    # Find non taken path
+    i = 1
+    name, ext = os.path.splitext(desired)
+    while os.path.exists(dest):
+        dest = f'{name}-{i}' + ext
+        i += 1
+
+    log.info(f'Organizing {document} in {dest}')
+
+    # Copy the file
+    shutil.copy(document.tmpfile, dest)
+
+    # Update the path of the document in the library
+    document.path = os.path.join(libdir, dest)
+    papier.library.update(document)
