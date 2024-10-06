@@ -40,8 +40,7 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
 
 def organize(document: papier.Document, tags: dict[str, str]) -> None:
     libdir = papier.config['directory'].as_path()
-    desired = desired_path(document, tags)
-    desired = os.path.join(libdir, desired)
+    desired = os.path.join(libdir, desired_path(document, tags))
     dest = desired
 
     # Find non taken path

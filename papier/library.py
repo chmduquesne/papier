@@ -1,14 +1,17 @@
 import papier
 import sqlite3
 import logging
+import os.path
 
 # Logger for this plugin
 log = logging.getLogger(__name__)
 
+# path of the database
+db = papier.config["library"].get()
 
-def init() -> sqlite3.Connection:
-    con = sqlite3.connect(papier.config["library"].get())
-    with con as cursor:
+
+def init_db() -> None:
+    with sqlite3.connect(db) as cursor:
         cursor.execute("CREATE TABLE IF NOT EXISTS library("
                        "sha256sum PRIMARY KEY, "
                        "path TEXT, "
@@ -17,10 +20,11 @@ def init() -> sqlite3.Connection:
                        "tags TEXT"
                        ")")
         # TODO find a way to store manual inputs
-    return con
 
 
-init()
+# Initialize the database if it does not exist
+if not os.path.exists(db):
+    init_db()
 
 
 def add(doc: papier.Document) -> None:
@@ -28,7 +32,7 @@ def add(doc: papier.Document) -> None:
     sql = ('INSERT INTO library'
            '(sha256sum, path, mtime, text) '
            'VALUES(?, ?, ?, ?)')
-    with sqlite3.connect(papier.config['library'].get()) as cursor:
+    with sqlite3.connect(db) as cursor:
         cursor.execute(sql, (doc.sha256sum(), doc.path, doc.mtime(), doc.text))
 
 
@@ -36,14 +40,14 @@ def has(doc: papier.Document) -> bool:
     log.info(f'checking if {doc} is in the library')
     # First, check if the path of the document exists with the same mtime
     sql = 'SELECT * FROM library WHERE path = ? and mtime = ?'
-    with sqlite3.connect(papier.config['library'].get()) as cursor:
+    with sqlite3.connect(db) as cursor:
         res = cursor.execute(sql, (doc.path, doc.mtime()))
         rows = res.fetchall()
         if len(rows) == 1:
             return True
     # Then, check the checksum
     sql = 'SELECT * FROM library WHERE sha256sum = ?'
-    with sqlite3.connect(papier.config['library'].get()) as cursor:
+    with sqlite3.connect(db) as cursor:
         res = cursor.execute(sql, (doc.sha256sum(),))
         if len(res.fetchall()) > 0:
             return True
@@ -52,5 +56,19 @@ def has(doc: papier.Document) -> bool:
 
 def update(doc: papier.Document) -> None:
     log.info(f'updating {doc} in the library')
-    # TODO: do it
-    raise NotImplementedError
+    sql = ('UPDATE library SET '
+           'path = ?, '
+           'mtime = ?, '
+           'text = ?, '
+           'tags = ?, '
+           'WHERE sha256sum = ?')
+    with sqlite3.connect(db) as cursor:
+        cursor.execute(sql, (doc.path, doc.mtime(), doc.text, '',
+                             doc.sha256sum()))
+
+
+def delete(doc: papier.Document) -> None:
+    log.info(f'removing {doc} from the library')
+    sql = ('DELETE FROM library WHERE sha256sum = ?')
+    with sqlite3.connect(db) as cursor:
+        cursor.execute(sql, (doc.sha256sum(),))
