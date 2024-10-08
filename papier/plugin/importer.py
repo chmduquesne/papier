@@ -50,7 +50,7 @@ def get_conf() -> str:
 def process(path: str) -> None:
     log.info(f'processing {path}')
     doc = papier.Document.from_import(path)
-    progress = papier.config['progress'].get(bool)
+    hide_progress = (not papier.config['progress'].get(bool))
 
     if papier.library.has(doc):
         log.info(f'skipping {path}')
@@ -58,7 +58,7 @@ def process(path: str) -> None:
 
     tags, choices = dict(), dict()
 
-    progressbar = tqdm.tqdm(papier.extractors, disable=(not progress))
+    progressbar = tqdm.tqdm(papier.extractors, disable=hide_progress)
     for e in progressbar:
         progressbar.set_description(f'[{doc.path}] {e.plugin}')
 
