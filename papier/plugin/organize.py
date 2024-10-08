@@ -1,5 +1,6 @@
 import papier
-# from papier.cli.commands import command, add_argument
+from papier.cli.commands import command
+from typing import Any
 import jinja2
 import os.path
 import logging
@@ -39,7 +40,11 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
 
 
 def organize(document: papier.Document, tags: dict[str, str]) -> None:
-    libdir = papier.config['directory'].as_path()
+    # Create libdir if necessary
+    libdir = os.path.expanduser(papier.config['directory'].as_path())
+    if not os.path.exists(libdir):
+        os.makedirs(libdir)
+
     desired = os.path.join(libdir, desired_path(document, tags))
     dest = desired
 
@@ -58,3 +63,10 @@ def organize(document: papier.Document, tags: dict[str, str]) -> None:
     # Update the path of the document in the library
     document.path = os.path.join(libdir, dest)
     papier.library.update(document)
+
+
+# TODO actually organize, not list
+@command(command_name='list')
+def run(args: list[Any]) -> None:
+    for doc, tags in papier.library.list():
+        print(doc, tags)

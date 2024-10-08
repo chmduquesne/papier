@@ -55,9 +55,11 @@ class Document():
         return self.sha256sum_
 
     @classmethod
-    def from_library(cls: Self, path: str) -> Self:
+    def from_library(cls: Self, path: str, sha256sum: str) -> Self:
         """TODO Create a document from a library entry"""
-        return None
+        res = cls.from_import(path)
+        res.sha256sum_ = sha256sum
+        return res
 
     @classmethod
     def from_import(cls: Self, path: str) -> Self:

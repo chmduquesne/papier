@@ -77,8 +77,11 @@ def delete(doc: papier.Document) -> None:
         cursor.execute(sql, (doc.sha256sum(),))
 
 
-def list() -> Generator[tuple, tuple, None]:
-    sql = 'SELECT * from library'
-    with sqlite3.connect(db) as cursor:
-        res = cursor.execute(sql, ())
-        yield res.fetchone()
+def list() -> Generator:
+    sql = 'SELECT sha256sum, path, mtime, text, tags FROM library'
+    with sqlite3.connect(db) as conn:
+        cursor = conn.execute(sql, ())
+        for row in cursor:
+            (sha256sum, path, _, _, tags) = row
+            doc = papier.Document.from_library(path, sha256sum)
+            yield (doc, tags)

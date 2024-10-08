@@ -6,6 +6,7 @@ import argparse
 from papier.cli.commands import command, add_argument
 import papier
 import papier.library
+import papier.plugin.organize  # should we allow importing a plugin?
 import confuse
 from tempfile import NamedTemporaryFile as TempFile
 import logging
@@ -114,7 +115,9 @@ def process(path: str) -> None:
     if all([tag in tags for tag in required]):
         log.info(f'All required tags are set for {doc}, adding to library')
         if not papier.config['dry_run'].get(bool):
-            papier.library.add(doc)
+            papier.library.add(doc, tags)
+        desired_path = papier.plugin.organize.desired_path(doc, tags)
+        log.info(f'desired_path: {desired_path}')
 
 
 def tag(path: str,
