@@ -71,12 +71,17 @@ def process(path: str) -> None:
                             f'{tag}. Assuming unsure.')
                 sure.pop(tag, None)
 
+        # Override the config so that set_tags always wins
+        if e.plugin == 'set_tags':
+            for tag in sure:
+                papier.config['autotag']['priority'][tag] = 'set_tags'
+
         # Handle conflicts between plugins, tag by tag
         for tag in sure | unsure:
             if tag in tags | choices:
                 try:
                     prio = papier.config['autotag']['priority'][tag].get()
-                    if e.plugin == prio or e.plugin == 'set_tags':
+                    if e.plugin == prio:
                         tags.pop(tag, None)
                         choices.pop(tag, None)
                     else:
