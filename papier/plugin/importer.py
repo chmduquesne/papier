@@ -64,14 +64,18 @@ def process(path: str) -> None:
 
         sure, unsure = e.extract(doc, tags)
 
+        # Handle faulty plugins
         for tag in unsure:
-            sure.pop(tag, None)
+            if tag in sure:
+                log.warning(f'{e.plugin} is both sure and unsure about '
+                            f'{tag}. Assuming unsure.')
+                sure.pop(tag, None)
 
+        # Handle conflicts between plugins, tag by tag
         for tag in sure | unsure:
             if tag in tags | choices:
                 try:
                     prio = papier.config['autotag']['priority'][tag].get()
-                    # tags manually set always win
                     if e.plugin == prio or e.plugin == 'set_tags':
                         tags.pop(tag, None)
                         choices.pop(tag, None)
@@ -84,6 +88,7 @@ def process(path: str) -> None:
                             f'Please specify config.autotag.priority.{tag}'
                             )
 
+        # Merge the results
         tags |= sure
         choices |= unsure
 
