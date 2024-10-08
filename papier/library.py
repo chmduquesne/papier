@@ -2,6 +2,8 @@ import papier
 import sqlite3
 import logging
 import os.path
+import json
+from typing import Generator
 
 # Logger for this plugin
 log = logging.getLogger(__name__)
@@ -27,13 +29,14 @@ if not os.path.exists(db):
     init_db()
 
 
-def add(doc: papier.Document) -> None:
+def add(doc: papier.Document, tags: dict = {}) -> None:
     log.info(f'inserting {doc} in the library')
     sql = ('INSERT INTO library'
-           '(sha256sum, path, mtime, text) '
-           'VALUES(?, ?, ?, ?)')
+           '(sha256sum, path, mtime, text, tags) '
+           'VALUES(?, ?, ?, ?, ?)')
     with sqlite3.connect(db) as cursor:
-        cursor.execute(sql, (doc.sha256sum(), doc.path, doc.mtime(), doc.text))
+        cursor.execute(sql, (doc.sha256sum(), doc.path, doc.mtime(),
+                             doc.text, json.dumps(tags)))
 
 
 def has(doc: papier.Document) -> bool:
@@ -54,7 +57,7 @@ def has(doc: papier.Document) -> bool:
     return False
 
 
-def update(doc: papier.Document) -> None:
+def update(doc: papier.Document, tags: dict = {}) -> None:
     log.info(f'updating {doc} in the library')
     sql = ('UPDATE library SET '
            'path = ?, '
@@ -63,8 +66,8 @@ def update(doc: papier.Document) -> None:
            'tags = ?, '
            'WHERE sha256sum = ?')
     with sqlite3.connect(db) as cursor:
-        cursor.execute(sql, (doc.path, doc.mtime(), doc.text, '',
-                             doc.sha256sum()))
+        cursor.execute(sql, (doc.path, doc.mtime(), doc.text,
+                             json.dumps(tags), doc.sha256sum()))
 
 
 def delete(doc: papier.Document) -> None:
@@ -72,3 +75,10 @@ def delete(doc: papier.Document) -> None:
     sql = ('DELETE FROM library WHERE sha256sum = ?')
     with sqlite3.connect(db) as cursor:
         cursor.execute(sql, (doc.sha256sum(),))
+
+
+def list() -> Generator[tuple, tuple, None]:
+    sql = 'SELECT * from library'
+    with sqlite3.connect(db) as cursor:
+        res = cursor.execute(sql, ())
+        yield res.fetchone()
