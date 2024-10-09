@@ -20,7 +20,7 @@ def register_listener(event: str, func: Callable) -> None:
     _listeners[event].append(func)
 
 
-def send(event: str, *args: Tuple[Any, ...], **kwds: Dict[str, Any]) -> None:
+def send(event: str, *args: Tuple[Any], **kwds: Dict[str, Any]) -> None:
     """Call all functions registered for the event"""
     log.info(f'Sending event: {event}')
     for func in _listeners[event]:
