@@ -3,7 +3,7 @@ import spacy
 from typing import Any
 
 
-@papier.extractor(consumes=['lang'], produces=[''])
+@papier.extracts(consumes=['lang'], produces=[''])
 def extract_date(document: papier.Document, tags: dict[str, Any]
                  ) -> tuple[dict[str, Any], dict[str, Any]]:
     if 'lang' not in tags or tags['lang'] != 'en':

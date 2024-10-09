@@ -8,7 +8,7 @@ import fasttext
 fasttext.FastText.eprint = lambda x: None
 
 
-@papier.extractor(produces=['lang'])
+@papier.extracts(produces=['lang'])
 def extract_lang(document: papier.Document, tags: dict[str, Any]
                  ) -> tuple[dict[str, Any], dict[str, Any]]:
     nlp = spacy.load('en_core_web_sm')

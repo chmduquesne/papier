@@ -3,7 +3,7 @@ import confuse
 from typing import Any
 
 
-@papier.extractor()
+@papier.extracts()
 def set_tags(document: papier.Document, tags: dict[str, Any]
              ) -> tuple[dict[str, Any], dict[str, Any]]:
     try:

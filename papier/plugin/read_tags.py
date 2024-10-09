@@ -2,7 +2,7 @@ import papier
 from typing import Any
 
 
-@papier.extractor()
+@papier.extracts()
 def read_tags(document: papier.Document, tags: dict[str, Any]
               ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Extract the tags already present in the document, removing the

@@ -1,5 +1,5 @@
 import papier
-from typing import Callable, List, Set, Self, Dict, Any
+from typing import Self, Any, Callable
 import collections
 from dataclasses import dataclass, field
 import functools
@@ -11,23 +11,23 @@ class Extractor():
     result of previous extractors"""
     extract: Callable = field(repr=False)
     plugin: str = field(default='', init=False)
-    consumes: List[str]
-    produces: List[str]
+    consumes: list[str]
+    produces: list[str]
 
     def __post_init__(self: Self) -> None:
         self.plugin = self.extract.__module__.split('.')[-1]
 
 
 # List of registered extractors
-extractors: List[Extractor] = []
+extractors: list[Extractor] = []
 
 # Map plugins to the tags they extract
 plugins = collections.defaultdict(list)
 
 
-def unsatisfied(extractors: List[Extractor]) -> int:
+def unsatisfied(extractors: list[Extractor]) -> int:
     """unsatisfied dependencies if the extractors are processed in order"""
-    produced: Set[str] = set()
+    produced: set[str] = set()
     res = 0
     for e in extractors:
         for tag in e.consumes:
@@ -59,12 +59,11 @@ def register_extractor(e: Extractor) -> None:
     extractors.insert(index_min, e)
 
 
-def extractor(produces: List[str] = [], consumes: List[str] = []
-              ) -> Callable:
+def extracts(produces: list[str] = [], consumes: list[str] = []) -> Callable:
     """Register a function as an extractor, positioning it so that
     unsatisfied dependencies are minimized"""
-    def decorator(func: Callable[[papier.Document, Dict[str, Any]],
-                                 Dict[str, Any]]) -> Callable:
+    def decorator(func: Callable[[papier.Document, dict[str, Any]],
+                                 dict[str, Any]]) -> Callable:
         register_extractor(Extractor(func, consumes, produces))
 
         @functools.wraps

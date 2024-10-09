@@ -13,7 +13,7 @@ logging.getLogger('transformers.tokenization_utils_base').setLevel(
 huggingface_hub.utils.disable_progress_bars()
 
 
-@papier.extractor(consumes=['lang'], produces=['emmitter'])
+@papier.extracts(consumes=['lang'], produces=['emmitter'])
 def extract_emmitter(document: papier.Document, tags: dict[str, Any]
                      ) -> tuple[dict[str, Any], dict[str, Any]]:
     if 'lang' not in tags:

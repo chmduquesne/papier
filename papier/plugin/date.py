@@ -6,7 +6,7 @@ from dateparser_data.settings import default_parsers
 from typing import Any
 
 
-@papier.extractor(consumes=['lang'], produces=['date'])
+@papier.extracts(consumes=['lang'], produces=['date'])
 def extract_date(document: papier.Document, tags: dict[str, Any]
                  ) -> tuple[dict[str, Any], dict[str, Any]]:
 
