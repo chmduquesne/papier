@@ -15,7 +15,7 @@ log = logging.getLogger('papier')
 _event_handlers = defaultdict(set)
 
 
-def register_listener(event: str, func: Callable) -> None:
+def register_handler(event: str, func: Callable) -> None:
     """Sets func to be called whenever the event is triggered"""
     _event_handlers[event].add(func)
 
@@ -47,5 +47,5 @@ def load_plugins(plugins: list[str] = ()) -> None:
 def event_handler(event: str) -> Callable:
     """Decorator. Call this function every time the event is triggered"""
     def decorator(func: Callable) -> None:
-        register_listener(event, func)
+        register_handler(event, func)
     return decorator
