@@ -3,12 +3,13 @@ import confuse
 from .extractor import extracts, extractors
 from .document import Document
 from .errors import PapierError, ConfigError, CommandError, PluginError
-from .plugins import load_plugins, send_event, event_handler
+from .plugins import (load_plugins, declare_event, set_event_handler,
+                      send_event)
 
 
 __all__ = ['extracts', 'extractors', 'Document', 'PapierError',
            'ConfigError', 'CommandError', 'PluginError', 'load_plugins',
-           'send_event', 'event_handler']
+           'declare_event', 'set_event_handler', 'send_event']
 __version__ = '0.0.1'
 __author__ = 'Christophe-Marie Duquesne <chmd+papier@chmd.fr>'
 

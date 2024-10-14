@@ -6,7 +6,6 @@ import argparse
 from papier.cli.commands import command, add_argument
 import papier
 import papier.library
-import papier.plugin.organize  # should we allow importing a plugin?
 import confuse
 from tempfile import NamedTemporaryFile as TempFile
 import logging
@@ -22,6 +21,11 @@ log = logging.getLogger(__name__)
 
 # Which files we process
 PDF = re.compile(r'.*\.pdf', re.IGNORECASE)
+
+
+papier.declare_event('imported',
+                     'called after a file is imported in the database. '
+                     'Arguments: document, tags')
 
 
 def find_pdfs(path: str) -> Generator[str, str, str]:
@@ -116,8 +120,7 @@ def process(path: str) -> None:
         log.info(f'All required tags are set for {doc}, adding to library')
         if not papier.config['dry_run'].get(bool):
             papier.library.add(doc, tags)
-        desired_path = papier.plugin.organize.desired_path(doc, tags)
-        log.info(f'desired_path: {desired_path}')
+        papier.send_event('imported', doc, tags)
 
 
 def tag(path: str,

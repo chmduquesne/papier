@@ -63,7 +63,7 @@ def update(doc: papier.Document, tags: dict = {}) -> None:
            'path = ?, '
            'mtime = ?, '
            'text = ?, '
-           'tags = ?, '
+           'tags = ? '
            'WHERE sha256sum = ?')
     with sqlite3.connect(db) as cursor:
         cursor.execute(sql, (doc.path, doc.mtime(), doc.text,

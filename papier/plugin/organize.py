@@ -58,11 +58,23 @@ def organize(document: papier.Document, tags: dict[str, str]) -> None:
     log.info(f'Organizing {document} in {dest}')
 
     # Copy the file
+    dirname = os.path.dirname(dest)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
     shutil.copy(document.tmpfile, dest)
 
     # Update the path of the document in the library
     document.path = os.path.join(libdir, dest)
     papier.library.update(document)
+
+
+def on_imported(document: papier.Document, tags: dict) -> None:
+    if papier.config['import']['copy'].get(bool):
+        if not papier.config['dry_run'].get(bool):
+            organize(document, tags)
+
+
+papier.set_event_handler('imported', on_imported)
 
 
 # TODO actually organize, not list

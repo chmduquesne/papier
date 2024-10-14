@@ -7,6 +7,11 @@ import sys
 from typing import Any, Callable, Tuple, List, Dict
 
 
+papier.declare_event('subcommand_end',
+                     'called after a subcommand finishes. Argument: '
+                     '`command`, the name of the subcommand')
+
+
 # Parser
 cli = argparse.ArgumentParser(
     description='A pdf library organizer',
@@ -134,6 +139,5 @@ def main() -> None:
         cli.print_help()
     else:
         # TODO: find a way to list all events
-        papier.send_event("command starting", command=args.command)
         args.func(args)
-        papier.send_event("command finished", command=args.command)
+        papier.send_event('subcommand_end')
