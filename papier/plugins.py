@@ -4,7 +4,7 @@ import logging
 import traceback
 import importlib
 from collections import defaultdict
-from typing import Any
+from typing import Any, Callable
 
 
 # Global logger
@@ -12,12 +12,12 @@ log = logging.getLogger('papier')
 
 
 # Map event name -> list of functions to call
-_listeners = defaultdict(list)
+_listeners = defaultdict(set)
 
 
-def register_listener(event: str, func: callable) -> None:
+def register_listener(event: str, func: Callable) -> None:
     """Sets func to be called whenever the event is triggered"""
-    _listeners[event].append(func)
+    _listeners[event].add(func)
 
 
 def send(event: str, *args: tuple[Any], **kwds: dict[str, Any]) -> None:
@@ -42,3 +42,10 @@ def load_plugins(plugins: list[str] = ()) -> None:
                     f'** error loading plugin "{plugin}":\n'
                     f'{traceback.format_exc()}'
                     )
+
+
+def event_handler(event: str) -> Callable:
+    """Decorator. Call this function every time the event is triggered"""
+    def decorator(func: Callable) -> None:
+        register_listener(event, func)
+    return decorator
