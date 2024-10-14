@@ -139,7 +139,7 @@ def tag(path: str,
         return tmp.name
 
 
-def split_pair(tag_pair: str) -> tuple[str, ...]:
+def split_pair(tag_pair: str) -> tuple[str, str]:
     """splits the input string at the first equals sign"""
     i = tag_pair.find('=')
     if i == -1:
@@ -163,9 +163,9 @@ def split_pair(tag_pair: str) -> tuple[str, ...]:
         add_argument('--overwrite-tags', action=argparse.BooleanOptionalAction,
                      help='Rewrite the files copied to the library',
                      default=argparse.SUPPRESS),
-        add_argument('--ocr', action=argparse.BooleanOptionalAction,
+        add_argument('--ocr',
                      help='Run OCR prior to import if no text is embedded',
-                     choices=['always', 'never', 'empty'],
+                     choices=['yes', 'no', 'force'],
                      default=argparse.SUPPRESS),
         add_argument('--set', action='append',
                      help='Set the given tag to the given value',

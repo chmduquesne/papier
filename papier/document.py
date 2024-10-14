@@ -67,19 +67,21 @@ class Document():
         res = cls(path)
 
         tmpfile = tempfile.NamedTemporaryFile(delete=False).name
-        ocr = papier.config['import']['ocr'].get(str)
+        ocr = papier.config['import']['ocr'].get()
         match ocr:
-            case 'never':
+            case 'no' | False:
                 shutil.copy(path, tmpfile)
-            case 'always':
-                ocrmypdf.ocr(path, tmpfile, redo_ocr=True, progress_bar=False)
-            case 'empty':
+            case 'force':
+                ocrmypdf.ocr(path, tmpfile, force_ocr=True,
+                             progress_bar=False)
+            case 'yes' | True:
                 try:
                     ocrmypdf.ocr(path, tmpfile, progress_bar=False)
                 except ocrmypdf.exceptions.PriorOcrFoundError:
                     shutil.copy(path, tmpfile)
             case _:
-                raise papier.ConfigError('ocr={ocr}: unexpected config value"')
+                raise papier.ConfigError(
+                        f'ocr={ocr}: unexpected config value"')
         res.tmpfile = tmpfile
 
         res.pdfreader = pypdf.PdfReader(tmpfile)

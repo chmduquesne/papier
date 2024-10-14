@@ -6,8 +6,7 @@ import:
   copy: yes
   delete: no
   modify: no
-  ocr: empty
-  redo_ocr: no
+  ocr: yes
   autotag: yes
   set:
     tagger: papier
