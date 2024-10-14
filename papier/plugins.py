@@ -20,7 +20,8 @@ def register_handler(event: str, func: Callable) -> None:
     _event_handlers[event].add(func)
 
 
-def send(event: str, *args: tuple[Any], **kwds: dict[str, Any]) -> None:
+def send_event(event: str, *args: tuple[Any], **kwds: dict[str, Any]
+               ) -> None:
     """Call all functions registered for the event"""
     log.info(f'Sending event: {event}')
     for func in _event_handlers[event]:

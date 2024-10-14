@@ -134,6 +134,6 @@ def main() -> None:
         cli.print_help()
     else:
         # TODO: find a way to list all events
-        papier.plugins.send("command starting", command=args.command)
+        papier.send_event("command starting", command=args.command)
         args.func(args)
-        papier.plugins.send("command finished", command=args.command)
+        papier.send_event("command finished", command=args.command)
