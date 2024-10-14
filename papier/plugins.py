@@ -12,18 +12,18 @@ log = logging.getLogger('papier')
 
 
 # Map event name -> list of functions to call
-_listeners = defaultdict(set)
+_event_handlers = defaultdict(set)
 
 
 def register_listener(event: str, func: Callable) -> None:
     """Sets func to be called whenever the event is triggered"""
-    _listeners[event].add(func)
+    _event_handlers[event].add(func)
 
 
 def send(event: str, *args: tuple[Any], **kwds: dict[str, Any]) -> None:
     """Call all functions registered for the event"""
     log.info(f'Sending event: {event}')
-    for func in _listeners[event]:
+    for func in _event_handlers[event]:
         log.info(f'Calling function: '
                  f'{func.__name__}(args={args}, kwds={kwds})')
         func(*args, **kwds)
