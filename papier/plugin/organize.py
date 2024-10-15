@@ -19,7 +19,7 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
         proceed = True
 
         # process the conditions
-        if 'when' in rules:
+        if 'when' in rule:
             when = rule['when']
             conditions = []
             for statement in when:
