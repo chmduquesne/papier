@@ -31,5 +31,7 @@ plugins:
 
 organize:
   - when:
-    - all([emmitter, date, subject])
+    - 'emmitter != ""'
+    - 'date != ""'
+    - subject != ""
     path: 'misc/{{ emmitter }} - {{ date }} - {{ subject }}.pdf'

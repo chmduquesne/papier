@@ -28,6 +28,7 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
                             .from_string('{{ ' + statement + '}}')
                             .render(**tags))
                 conditions.append(rendered == 'True')
+                log.info(f'statement: {statement}, rendered: {rendered}')
             proceed = all(conditions)
 
         # Render the desired path
