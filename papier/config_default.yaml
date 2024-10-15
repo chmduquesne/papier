@@ -5,8 +5,9 @@ log: papier.log
 import:
   copy: yes
   delete: no
-  modify: no
   ocr: yes
+  overwrite_text: no
+  overwrite_tags: no
   autotag: yes
   set:
     tagger: papier
