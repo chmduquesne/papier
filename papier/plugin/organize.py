@@ -27,9 +27,7 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
                 template = ('{% if ' + f'{statement}' + ' %}'
                             'True{% else %}False{% endif %}')
                 rendered = env.from_string(template).render(**tags)
-                log.info(f'tags: {tags}')
                 conditions.append(rendered.strip() == 'True')
-                log.info(f'statement: {statement}, rendered: {rendered}')
             proceed = all(conditions)
 
         # Render the desired path
