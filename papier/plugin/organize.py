@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
-    env = jinja2.Environment()
+    env = jinja2.sandbox.SandboxedEnvironment()
 
     rules = papier.config['organize'].get(list)
     for rule in rules:
@@ -24,10 +24,11 @@ def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
             conditions = []
             for statement in when:
                 # every statement should render as 'True'
-                rendered = (env
-                            .from_string('{{ ' + statement + '}}')
-                            .render(**tags))
-                conditions.append(rendered == 'True')
+                template = ('{% if ' + f'{statement}' + ' %}'
+                            'True{% else %}False{% endif %}')
+                rendered = env.from_string(template).render(**tags)
+                log.info(f'tags: {tags}')
+                conditions.append(rendered.strip() == 'True')
                 log.info(f'statement: {statement}, rendered: {rendered}')
             proceed = all(conditions)
 
