@@ -2,6 +2,8 @@ import papier
 from papier.cli.commands import command
 from typing import Any
 import jinja2
+import jinja2.sandbox
+import re
 import os.path
 import logging
 import shutil
@@ -10,9 +12,15 @@ import shutil
 log = logging.getLogger(__name__)
 
 
-def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
-    env = jinja2.sandbox.SandboxedEnvironment()
+def match(s: str, pattern: str):
+    return re.match(pattern, s)
 
+
+env = jinja2.sandbox.SandboxedEnvironment()
+env.filters['match'] = match
+
+
+def desired_path(document: papier.Document, tags: dict[str, str]) -> str:
     rules = papier.config['organize'].get(list)
     for rule in rules:
         # proceed by default (no 'when' statement)
